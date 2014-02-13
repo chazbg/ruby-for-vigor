@@ -3,6 +3,7 @@ require 'json'
 load 'RiotProtocol.rb'
 
 # TODO: Use https instead of http
+# ChazBG id 20548044
 uri_domain = 'http://prod.api.pvp.net/api/lol/'
 api_key = '3cc8e32a-8370-46eb-89c6-be4ebaf0bbe4'
 

@@ -1,0 +1,1 @@
+rspec spec.rb --require ./../src/RFVProtocol.rb --colour --format documentation
