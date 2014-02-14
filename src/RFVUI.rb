@@ -1,5 +1,5 @@
 module UserInterface
-  class Context
+  class BasicMenu
     def display_menu
       puts 'B. Back'
       puts 'H. Home'
@@ -7,7 +7,7 @@ module UserInterface
     end
   end
   
-  class MainMenu < Context
+  class MainMenu < BasicMenu
     def display_menu
       puts '1. Get summoner statistics'
       puts '2. Ultimate Bravery'
@@ -15,7 +15,7 @@ module UserInterface
     end
   end
 
-  class RegionMenu < Context
+  class RegionMenu < BasicMenu
     def display_menu
       puts '1. Enter region'
       puts 'B. Back'
@@ -23,7 +23,7 @@ module UserInterface
     end
   end
   
-  class SummonerNameMenu < Context
+  class SummonerNameMenu < BasicMenu
     def display_menu
       puts '1. Enter summoner name'
       puts 'B. Back'
@@ -32,7 +32,7 @@ module UserInterface
     end
   end
   
-  class SummonerMenu < Context
+  class SummonerMenu < BasicMenu
     def display_menu
       puts '1. Matches details'
       puts '2. Ranking details'
@@ -44,15 +44,15 @@ module UserInterface
     end
   end
   
-  class MatchesMenu < Context
+  class MatchesMenu < BasicMenu
   end
   
-  class RankingMenu < Context
+  class RankingMenu < BasicMenu
   end
   
-  class ChampionSuggestionMenu < Context
+  class ChampionSuggestionMenu < BasicMenu
   end
   
-  class GeneralAdviceMenu < Context
+  class GeneralAdviceMenu < BasicMenu
   end
 end

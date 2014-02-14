@@ -297,3 +297,46 @@ module Model
     end
   end
 end
+
+module Controller
+  describe "Controller" do
+    describe "Context" do
+        it "Initializes contexts correctly" do
+        menu = UserInterface::MainMenu.new
+        data = "Test Data"
+        options = ["method1", "method2", "method3"]
+        
+        context = Context.new(menu, data, options)
+
+        context.options[1].should eq "method2"
+        context.menu.should eq menu
+        context.data.should eq "Test Data"
+      end
+    end
+    
+    describe "ContextStack" do
+      it "Pushes contexts correctly" do
+        stack = ContextStack.new
+        context1 = UserInterface::MainMenu.new
+        context2 = UserInterface::RegionMenu.new
+        context3 = UserInterface::SummonerNameMenu.new
+        stack.push(context1)
+        stack.push(context2)
+        stack.push(context3)
+        stack.top.should eq context3
+      end
+
+      it "Pops contexts correctly" do
+        stack = ContextStack.new
+        context1 = UserInterface::MainMenu.new
+        context2 = UserInterface::RegionMenu.new
+        context3 = UserInterface::SummonerNameMenu.new
+        stack.push(context1)
+        stack.push(context2)
+        stack.push(context3)
+        stack.pop
+        stack.top.should eq context2
+      end
+    end
+  end
+end
