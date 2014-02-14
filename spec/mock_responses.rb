@@ -52,7 +52,98 @@ CHAMPIONS = '{"champions": [
           "magicRank": 5
         }
        ]}'.freeze
+ 
+FELLOW_PLAYERS = '
+                [
+                  {
+                     "championId": 7,
+                     "teamId": 100,
+                     "summonerId": 19548574
+                  },
+                  {
+                     "championId": 81,
+                     "teamId": 100,
+                     "summonerId": 19540266
+                  },
+                  {
+                     "championId": 40,
+                     "teamId": 100,
+                     "summonerId": 20293238
+                  },
+                  {
+                     "championId": 101,
+                     "teamId": 200,
+                     "summonerId": 19626527
+                  },
+                  {
+                     "championId": 19,
+                     "teamId": 200,
+                     "summonerId": 22314945
+                  },
+                  {
+                     "championId": 67,
+                     "teamId": 200,
+                     "summonerId": 20641850
+                  },
+                  {
+                     "championId": 79,
+                     "teamId": 200,
+                     "summonerId": 25210892
+                  },
+                  {
+                     "championId": 157,
+                     "teamId": 200,
+                     "summonerId": 22089707
+                  },
+                  {
+                     "championId": 102,
+                     "teamId": 100,
+                     "summonerId": 19540286
+                  }
+               ]'
    
+GAME_STATS = '{
+                  "totalDamageDealtToChampions": 22675,
+                  "item2": 3065,
+                  "goldEarned": 16974,
+                  "item1": 3207,
+                  "wardPlaced": 11,
+                  "totalDamageTaken": 57617,
+                  "item0": 3143,
+                  "trueDamageDealtPlayer": 30564,
+                  "physicalDamageDealtPlayer": 140410,
+                  "trueDamageDealtToChampions": 3213,
+                  "killingSprees": 2,
+                  "totalUnitsHealed": 1,
+                  "level": 18,
+                  "neutralMinionsKilledYourJungle": 109,
+                  "magicDamageDealtToChampions": 9466,
+                  "turretsKilled": 3,
+                  "magicDamageDealtPlayer": 73093,
+                  "neutralMinionsKilledEnemyJungle": 15,
+                  "assists": 17,
+                  "magicDamageTaken": 21191,
+                  "numDeaths": 7,
+                  "totalTimeCrowdControlDealt": 2995,
+                  "largestMultiKill": 1,
+                  "physicalDamageTaken": 32576,
+                  "win": false,
+                  "team": 100,
+                  "totalDamageDealt": 244069,
+                  "largestKillingSpree": 4,
+                  "totalHeal": 11236,
+                  "item4": 3110,
+                  "item3": 3273,
+                  "item6": 3350,
+                  "item5": 3091,
+                  "minionsKilled": 98,
+                  "timePlayed": 2788,
+                  "physicalDamageDealtToChampions": 9996,
+                  "championsKilled": 7,
+                  "trueDamageTaken": 3849,
+                  "goldSpent": 16840,
+                  "neutralMinionsKilled": 124
+               }'
 GAMES = '{
          "games": [
             {
