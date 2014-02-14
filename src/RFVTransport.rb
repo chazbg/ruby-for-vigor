@@ -12,5 +12,7 @@ module Transport
     else
       result[:status] = :failed
     end
+    
+    result
   end
 end

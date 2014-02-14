@@ -302,13 +302,17 @@ module Controller
   describe "Controller" do
     describe "Context" do
         it "Initializes contexts correctly" do
-        menu = UserInterface::MainMenu.new
+        menu = UserInterface::BasicMenu.new
         data = "Test Data"
-        options = ["method1", "method2", "method3"]
+        options = { 
+          b: { method: :back, args: [] }, 
+          h: { method: :home, args: [] }, 
+          q: { method: :quit, args: [] } 
+        }
         
         context = Context.new(menu, data, options)
 
-        context.options[1].should eq "method2"
+        context.options[:b].should eq({ method: :back, args: [] })
         context.menu.should eq menu
         context.data.should eq "Test Data"
       end
