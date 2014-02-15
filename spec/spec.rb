@@ -301,21 +301,6 @@ end
 module Controller
   describe "Controller" do
     describe "Context" do
-        it "Initializes contexts correctly" do
-        menu = UserInterface::BasicMenu.new
-        data = "Test Data"
-        options = { 
-          b: { method: :back, args: [] }, 
-          h: { method: :home, args: [] }, 
-          q: { method: :quit, args: [] } 
-        }
-        
-        context = Context.new(menu, data, options)
-
-        context.options[:b].should eq({ method: :back, args: [] })
-        context.menu.should eq menu
-        context.data.should eq "Test Data"
-      end
     end
     
     describe "ContextStack" do

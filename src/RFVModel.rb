@@ -4,6 +4,7 @@ module Model
     
     def initialize(summoner_json = {})
       summoner_json ||= {}
+
       @id = summoner_json["id"] || 0
       @name = summoner_json["name"] || ""
       @summoner_level = summoner_json["summonerLevel"] || 0

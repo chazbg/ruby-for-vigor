@@ -37,7 +37,8 @@ module Protocol
   
   class SummonerByName
     def self.create_request(region = "", names = [])
-      URI("#{URI_DOMAIN}#{region.downcase}/v1.3/summoner/by-name/#{names.join(',')}?api_key=#{API_KEY}")
+      names = names.map { |name| name.gsub(/\s+/, "").downcase }.join(',')
+      URI("#{URI_DOMAIN}#{region.downcase}/v1.3/summoner/by-name/#{names}?api_key=#{API_KEY}")
     end
   end
 

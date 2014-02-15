@@ -1,1 +1,1 @@
-rspec spec.rb --require ./../src/RFVProtocol.rb ./../src/RFVModel.rb ./../src/RFVTransport.rb   ./../src/RFVController.rb ./../src/RFVUI.rb --colour --format documentation
+rspec spec.rb --require ./../src/RFVController.rb --colour --format documentation
