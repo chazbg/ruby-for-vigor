@@ -118,6 +118,18 @@ module Controller
     
     def process_summoner_menu_input(input)
       case input
+      when '1'
+        process = :process_matches_menu_input
+        @context_stack.push(Context.new(UserInterface::MatchesMenu.new, process))
+      when '2'
+        process = :process_ranking_menu_input
+        @context_stack.push(Context.new(UserInterface::RankingMenu.new, process))
+      when '3'
+        process = :process_champion_suggestion_menu_input
+        @context_stack.push(Context.new(UserInterface::ChampionSuggestionMenu.new, process))
+      when '4'
+        process = :process_general_advice_menu_input
+        @context_stack.push(Context.new(UserInterface::GeneralAdviceMenu.new, process))
       when 'h'
         @context_stack.rollback
       when 'b'
@@ -128,9 +140,66 @@ module Controller
       end
     end
     
+    def process_matches_menu_input(input)
+      case input
+      when 'h'
+        @context_stack.rollback
+      when 'b'
+        @context_stack.pop
+      else
+        # TODO: Call UI.displayerror
+        puts "Incorrect option"
+      end
+    end
+    
+    def process_ranking_menu_input(input)
+      case input
+      when 'h'
+        @context_stack.rollback
+      when 'b'
+        @context_stack.pop
+      else
+        # TODO: Call UI.displayerror
+        puts "Incorrect option"
+      end
+    end
+    
+    def process_champion_suggestion_menu_input(input)
+      case input
+      when 'h'
+        @context_stack.rollback
+      when 'b'
+        @context_stack.pop
+      else
+        # TODO: Call UI.displayerror
+        puts "Incorrect option"
+      end
+    end
+    
+    def process_general_advice_menu_input(input)
+      case input
+      when 'h'
+        @context_stack.rollback
+      when 'b'
+        @context_stack.pop
+      else
+        # TODO: Call UI.displayerror
+        puts "Incorrect option"
+      end
+    end
+
     def process_ultimate_bravery_menu_input(input)
+      case input
+      when 'h'
+        @context_stack.rollback
+      when 'b'
+        @context_stack.pop
+      else
+        # TODO: Call UI.displayerror
+        puts "Incorrect option"
+      end
     end
   end
   
-  # data_controller = DataController.new
+  data_controller = DataController.new
 end
