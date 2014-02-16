@@ -72,13 +72,13 @@ module Model
       summoner = Summoner.new(JSON.parse(SUMMONER_BY_NAME)["chazbg"])
       summoner.id.should be_kind_of Integer
       summoner.name.should be_kind_of String
-      summoner.summoner_level.should be_kind_of Integer
+      summoner.level.should be_kind_of Integer
       
       # Correct handling of nil values (common for JSON)
       summoner = Summoner.new(nil)
       summoner.id.should be_kind_of Integer
       summoner.name.should be_kind_of String
-      summoner.summoner_level.should be_kind_of Integer
+      summoner.level.should be_kind_of Integer
     end
     
     it "Extracts Game::FellowPlayer values from JSON correctly" do
@@ -250,7 +250,7 @@ module Model
     it "Extracts Game values from JSON correctly" do
       game = Game.new(JSON.parse(GAMES)["games"][0])
       game.champion_id.should be_kind_of Integer
-      game.create_date.should be_kind_of Date
+      game.create_date.should be_kind_of Time
       game.fellow_players.should be_kind_of Array
       game.fellow_players[0].should be_kind_of Game::FellowPlayer
       game.game_mode.should be_kind_of String
@@ -265,7 +265,7 @@ module Model
       # Correct handling of nil values (common for JSON)
       game = Game.new(nil)
       game.champion_id.should be_kind_of Integer
-      game.create_date.should be_kind_of Date
+      game.create_date.should be_kind_of Time
       game.fellow_players.should be_kind_of Array
       game.game_mode.should be_kind_of String
       game.game_type.should be_kind_of String
@@ -322,6 +322,48 @@ module Controller
         stack.push(context3)
         stack.pop
         stack.top.should eq context2
+      end
+    end
+    
+    describe "DataController" do
+      it "Assigns players to teams correctly" do
+        data_controller = DataController.new
+        
+        summoner1 = Model::Game::FellowPlayer.new({
+          "teamId" => 100,
+          "summonerId" => 1,
+          "championId" => 11
+        })
+        
+        summoner2 = Model::Game::FellowPlayer.new({
+          "teamId" => 200,
+          "summonerId" => 2,
+          "championId" => 12
+        })
+        
+        summoner3 = Model::Game::FellowPlayer.new({
+          "teamId" => 100,
+          "summonerId" => 3,
+          "championId" => 13
+        })
+        
+        summoner4 = Model::Game::FellowPlayer.new({
+          "teamId" => 200,
+          "summonerId" => 1,
+          "championId" => 14
+        })
+        
+        blue_team, purple_team = data_controller.assign_players([
+          summoner1, 
+          summoner2,
+          summoner3,
+          summoner4
+        ])
+        
+        blue_team.include?(summoner1).should eq true
+        blue_team.include?(summoner3).should eq true
+        purple_team.include?(summoner2).should eq true
+        purple_team.include?(summoner4).should eq true
       end
     end
   end

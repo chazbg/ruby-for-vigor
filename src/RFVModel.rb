@@ -18,7 +18,7 @@ module Model
     attr_reader :champion_id, :create_date, :fellow_players, :game_mode, :game_type, :map_id, :spell1, :spell2, :stats, :sub_type, :team_id
   
     class FellowPlayer
-      attr_reader :champion_id, :team_id, :summoner_id
+      attr_accessor :champion_id, :team_id, :summoner_id
       
       def initialize(fellow_player_json = {})
         fellow_player_json ||= {}
@@ -29,7 +29,7 @@ module Model
     end
     
     class Stats
-      attr_reader :assists, :barracks_killed, :champions_killed, :combat_player_score, :consumables_purchased, :damage_dealt_player, :double_kills, :first_blood, :gold, :gold_earned, :gold_spent, :item0, :item1, :item2, :item3, :item4, :item5, :item6, :items_purchased, :killing_sprees, :largest_critical_strike, :largest_killing_spree, :largest_multi_kill, :legendary_items_created, :level, :magic_damage_dealt_player, :magic_damage_dealt_to_champions, :magic_damage_taken, :minions_denied, :minions_killed, :neutral_minions_killed, :neutral_minions_killed_enemy_jungle, :neutral_minions_killed_your_jungle, :nexus_killed, :node_capture, :node_capture_assist, :node_neutralize, :node_neutralize_assist, :num_deaths, :num_items_bought, :objective_player_score, :penta_kills, :physical_damage_dealt_player, :physical_damage_dealt_to_champions, :physical_damage_taken, :quadra_kills, :sight_wards_bought, :spell1_cast, :spell2_cast, :spell3_cast, :spell4_cast, :summoner_spell1_cast, :summoner_spell2_cast, :super_monsters_killed, :team, :team_objective, :time_played, :total_damage_dealt, :total_damage_dealt_to_champions, :total_heal, :total_player_score, :total_score_rank, :total_time_crowd_control_dealt, :total_units_healed, :triple_kills, :true_damage_dealt_player, :true_damage_dealt_to_champions, :true_damage_taken, :turrets_killed, :unreal_kills, :victory_point_total, :vision_wards_bought, :ward_killed, :ward_placed, :win
+      attr_reader :assists, :barracks_killed, :champions_killed, :combat_player_score, :consumables_purchased, :damage_dealt_player, :double_kills, :first_blood, :gold, :gold_earned, :gold_spent, :item0, :item1, :item2, :item3, :item4, :item5, :item6, :items_purchased, :killing_sprees, :largest_critical_strike, :largest_killing_spree, :largest_multi_kill, :legendary_items_created, :level, :magic_damage_dealt_player, :magic_damage_dealt_to_champions, :magic_damage_taken, :minions_denied, :minions_killed, :neutral_minions_killed, :neutral_minions_killed_enemy_jungle, :neutral_minions_killed_your_jungle, :nexus_killed, :node_capture, :node_capture_assist, :node_neutralize, :node_neutralize_assist, :num_deaths, :num_items_bought, :objective_player_score, :penta_kills, :physical_damage_dealt_player, :physical_damage_dealt_to_champions, :physical_damage_taken, :quadra_kills, :sight_wards_bought, :spell1_cast, :spell2_cast, :spell3_cast, :spell4_cast, :summoner_spell1_cast, :summoner_spell2_cast, :super_monsters_killed, :team, :team_objective, :time_played, :total_damage_dealt, :total_damage_dealt_to_champions, :total_heal, :total_player_score, :total_score_rank, :total_time_crowd_control_dealt, :total_units_healed, :triple_kills, :true_damage_dealt_player, :true_damage_dealt_to_champions, :total_damage_taken, :true_damage_taken, :turrets_killed, :unreal_kills, :victory_point_total, :vision_wards_bought, :ward_killed, :ward_placed, :win
       
       def initialize(stats_json = {})
         stats_json ||= {}
@@ -115,7 +115,7 @@ module Model
     def initialize(game_json = {})
       game_json ||= {}
       @champion_id = game_json["championId"] || 0
-      @create_date = Time.at((game_json["createDate"] / 1000) || 0)
+      @create_date = Time.at((game_json["createDate"] || 0) / 1000)
       @fellow_players = []
       (game_json["fellowPlayers"] || []).each { |player| @fellow_players << FellowPlayer.new(player) }
       @game_mode = game_json["gameMode"] || ""
@@ -140,6 +140,18 @@ module Model
       @attack_rank = champion_json["attackRank"] || 0
       @magic_rank = champion_json["magicRank"] || 0
       @difficulty_rank = champion_json["difficultyRank"] || 0
+    end
+  end
+  
+  class Item
+    attr_reader :id, :name, :top_tier
+    
+    def initialize(item_json = {})
+      item_json ||= {}
+      
+      @id = item_json[0].to_i
+      @name = item_json[1]["name"]
+      item_json[1]["into"] == nil ? @top_tier = true : @top_tier = false
     end
   end
 end

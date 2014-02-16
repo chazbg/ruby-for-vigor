@@ -85,14 +85,46 @@ module UserInterface
   end
   
   class MatchDetails < BasicMenu
-    def dislpay_match_details(match_model)
-      stats = match_model.stats
+    def dislpay_match_details(match, items, blue_team, purple_team)
+      stats = match.stats
+      
+      item_ids = [
+        stats.item0,
+        stats.item1,
+        stats.item2,
+        stats.item3,
+        stats.item4,
+        stats.item5,
+        stats.item6        
+      ].select { |item| item != 0 }
+      
+      item_build = items.select { |item| item_ids.include?(item.id) }
+      item_build = item_build.map { |item| item.name }.join(", ")
+      
+      players_string = [
+        "-" * 121,
+        "%-60s %60s" % ["Blue", "Purple"],
+        "-" * 121
+      ]
+      
+      (0...blue_team.size).each do |index|
+        blue_player = blue_team[index]
+        purple_player = purple_team[index]
+        
+        players_string << "%-60s %60s" % [
+          "#{blue_player[:name]}, Summoner Level #{blue_player[:level]}, #{blue_player[:champion]}", 
+          "#{purple_player[:champion]}, Summoner Level #{purple_player[:level]}, #{purple_player[:name]}"
+        ]
+      end
+      
+      players_string << "-" * 121
       @data = [
+        players_string.join("\n"),
         "----------------------------------------",
-        "Date: #{match_model.create_date}",
-        "Game Mode: #{match_model.game_mode}",
-        "Game Type: #{match_model.game_type}",
-        "Game Subtype: #{match_model.sub_type}",
+        "Date: #{match.create_date}",
+        "Game Mode: #{match.game_mode}",
+        "Game Type: #{match.game_type}",
+        "Game Subtype: #{match.sub_type}",
         "----------------------------------------",
         "Match Stats:",
         "Kills: #{stats.champions_killed}",
@@ -101,6 +133,16 @@ module UserInterface
         "Minions killed: #{stats.minions_killed}",
         "Jungle monsters killed in your jungle: #{stats.neutral_minions_killed_your_jungle}",
         "Jungle monsters killed in enemy jungle: #{stats.neutral_minions_killed_enemy_jungle}",
+        "Wards killed: #{stats.ward_killed}",
+        "Wards placed: #{stats.ward_placed}",
+        "Gold earned: #{stats.gold_earned}",
+        "Gold spent: #{stats.gold_spent}",
+        "Item Build: #{item_build}",
+        "Total damage dealt: #{stats.total_damage_dealt}",
+        "Total damage taken: #{stats.total_damage_taken}",
+        "Total time of crowd control dealt: #{Time.at(stats.total_time_crowd_control_dealt).gmtime.strftime('%R:%S')}",
+        "Game duration: #{Time.at(stats.time_played).gmtime.strftime('%R:%S')}",
+        "Result: #{stats.win == true ? "Win" : "Lose" }",
         "----------------------------------------"
       ].join("\n")
     end

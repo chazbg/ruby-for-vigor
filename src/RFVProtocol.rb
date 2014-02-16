@@ -42,6 +42,13 @@ module Protocol
     end
   end
 
+  class SummonersByIds
+    def self.create_request(region = "", ids = [])
+      ids = ids.join(',')
+      URI("#{URI_DOMAIN}#{region.downcase}/v1.3/summoner/#{ids}?api_key=#{API_KEY}")
+    end
+  end
+  
   class SummonerMasteries
     def self.create_request(region = "", summoner_ids = [])
       URI("#{URI_DOMAIN}#{region.downcase}/v1.3/summoner/#{summoner_ids.join(',')}/masteries?api_key=#{API_KEY}")
@@ -54,6 +61,12 @@ module Protocol
     end
   end
 
+  class Items
+    def self.create_request(region = "")
+      URI("#{URI_DOMAIN}static-data/#{region.downcase}/v1/item?itemListData=into&api_key=#{API_KEY}")
+    end
+  end
+  
   private
 
   URI_DOMAIN = "http://prod.api.pvp.net/api/lol/".freeze
