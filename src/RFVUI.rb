@@ -88,38 +88,12 @@ module UserInterface
     def dislpay_match_details(match, items, blue_team, purple_team)
       stats = match.stats
       
-      item_ids = [
-        stats.item0,
-        stats.item1,
-        stats.item2,
-        stats.item3,
-        stats.item4,
-        stats.item5,
-        stats.item6        
-      ].select { |item| item != 0 }
+      item_build = item_build_string(items, stats)
+      players = players_string(blue_team, purple_team)
       
-      item_build = items.select { |item| item_ids.include?(item.id) }
-      item_build = item_build.map { |item| item.name }.join(", ")
       
-      players_string = [
-        "-" * 121,
-        "%-60s %60s" % ["Blue", "Purple"],
-        "-" * 121
-      ]
-      
-      (0...blue_team.size).each do |index|
-        blue_player = blue_team[index]
-        purple_player = purple_team[index]
-        
-        players_string << "%-60s %60s" % [
-          "#{blue_player[:name]}, Summoner Level #{blue_player[:level]}, #{blue_player[:champion]}", 
-          "#{purple_player[:champion]}, Summoner Level #{purple_player[:level]}, #{purple_player[:name]}"
-        ]
-      end
-      
-      players_string << "-" * 121
       @data = [
-        players_string.join("\n"),
+        players,
         "----------------------------------------",
         "Date: #{match.create_date}",
         "Game Mode: #{match.game_mode}",
@@ -145,6 +119,48 @@ module UserInterface
         "Result: #{stats.win == true ? "Win" : "Lose" }",
         "----------------------------------------"
       ].join("\n")
+    end
+    
+    private
+    
+    def item_build_string(items, stats)
+      item_ids = [
+        stats.item0,
+        stats.item1,
+        stats.item2,
+        stats.item3,
+        stats.item4,
+        stats.item5,
+        stats.item6        
+      ].select { |item| item != 0 }
+      
+      item_build = items.select { |item| item_ids.include?(item.id) }
+      item_build = item_build.map { |item| item.name }.join(", ")
+    end
+    
+    def players_string(blue_team, purple_team)
+      players = [
+        "-" * 121,
+        "%-60s %60s" % ["Blue", "Purple"],
+        "-" * 121
+      ]
+      
+      (0...blue_team.size).each do |index|
+        blue_player = blue_team[index]
+        purple_player = purple_team[index]
+        
+        players << "%-20s %-20s %-18s %18s %20s %20s" % [
+          "#{blue_player[:name]}", 
+          "Summoner Level #{blue_player[:level]}", 
+          "#{blue_player[:champion]}", 
+          "#{purple_player[:champion]}",
+          "Summoner Level #{purple_player[:level]}", 
+          "#{purple_player[:name]}"
+        ]
+      end
+      
+      players << "-" * 121
+      players.join("\n")
     end
   end
   
