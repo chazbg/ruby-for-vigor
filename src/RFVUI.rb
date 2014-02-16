@@ -55,7 +55,7 @@ module UserInterface
         "Summoner name: #{summoner_model.name}",
         "Summoner level: #{summoner_model.level}",
         "----------------------------------------"
-      ].join("\n")
+      ]
     end
   end
   
@@ -76,11 +76,10 @@ module UserInterface
           "Game Type: #{match.game_type}",
           "Game Subtype: #{match.sub_type}",
           "----------------------------------------"
-        ].join("\n")
+        ]
       end
       
       @data << "Enter game number to see match details"
-      @data.join("\n")
     end
   end
   
@@ -118,7 +117,7 @@ module UserInterface
         "Game duration: #{Time.at(stats.time_played).gmtime.strftime('%R:%S')}",
         "Result: #{stats.win == true ? "Win" : "Lose" }",
         "----------------------------------------"
-      ].join("\n")
+      ]
     end
     
     private
@@ -160,7 +159,6 @@ module UserInterface
       end
       
       players << "-" * 121
-      players.join("\n")
     end
   end
   

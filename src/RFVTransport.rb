@@ -1,8 +1,8 @@
 require 'net/http'
 require 'json'
 
-module Transport
-  def self.send_request(uri)
+class Transport
+  def send_request(uri)
     result = {}
     response = Net::HTTP.get_response(uri)
     

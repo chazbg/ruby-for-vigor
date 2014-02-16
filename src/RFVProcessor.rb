@@ -1,8 +1,8 @@
 require_relative 'RFVController'
 
 class MenuInputProcessor
-  def initialize()
-    @data_controller = Controller::DataController.new
+  def initialize(transport)
+    @data_controller = Controller::DataController.new(transport)
   end
   
   def process(input)

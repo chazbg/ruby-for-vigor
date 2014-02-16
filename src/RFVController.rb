@@ -36,36 +36,30 @@ module Controller
     end
   end
   
-  class DataController
-    attr_reader :process
-    def initialize()
-      # Download static data - champions, runes, masteries, items
-      champions_response = Transport::send_request(Protocol::Champions.create_request("NA"))
+  class QueryService
+    include Model
+    include Protocol
+    
+    attr_reader :champions, :items
+    
+    def initialize(transport)
+      @transport = transport
+      
+      champions_response = @transport.send_request(Champions.create_request("NA"))
 
       if :success == champions_response[:status]
         @champions = champions_response[:json]["champions"].map do |champion_json|
-          Model::Champion.new(champion_json)
+          Champion.new(champion_json)
         end
       end
-
-      items_response = Transport::send_request(Protocol::Items.create_request("NA"))
+      
+      items_response = @transport.send_request(Items.create_request("NA"))
       
       if :success == items_response[:status]
         @items = items_response[:json]["data"].map do |item_json|
-          Model::Item.new(item_json)
+          Item.new(item_json)
         end
       end
-      # @champions.each { |champion| p champion}
-
-      @context_stack = ContextStack.new
-
-      @context_stack.push(Context.new(UserInterface::MainMenu.new, :process_main_menu_input))
-      @process = @context_stack.top.process
-      @context_stack.top.menu.display_menu
-    end
-    
-    def context_transition(transition, input = nil)
-      send(transition, input)
     end
     
     def assign_players(players)
@@ -85,7 +79,7 @@ module Controller
       
     def player_detailed_info(server, player)
       request = Protocol::SummonersByIds.create_request(server, [player.summoner_id])
-      response = Transport::send_request(request)
+      response = @transport.send_request(request)
       detailed_info = {}
       
       champion_name = @champions.select { |champion| player.champion_id == champion.id }[0].name
@@ -103,32 +97,78 @@ module Controller
       detailed_info
     end
     
+    def request_summoners(server, names)
+      request = SummonerByName.create_request(server, names)
+      response = @transport.send_request(request)
+
+      if response[:status] == :success
+        summoners = names.map { |name| Summoner.new(response[:json][name], server) }
+      else
+        []
+      end
+    end
+    
+    def request_recent_games(server, summoner_id)
+      request = GamesInfo.create_request(server, summoner_id)
+      response = @transport.send_request(request)
+      
+      if response[:status] == :success
+        matches = response[:json]["games"].map { |game_json| Game.new(game_json) }
+      else
+        []
+      end
+    end
+    
+    def create_player(summoner_id, team_id, champion_id)
+      player = Game::FellowPlayer.new
+      player.summoner_id = summoner_id
+      player.team_id = team_id
+      player.champion_id = champion_id
+      player
+    end
+  end
+  
+  class DataController
+    include UserInterface
+    attr_reader :process
+    
+    def initialize(transport)
+      @service = QueryService.new(transport)
+      @context_stack = ContextStack.new
+
+      @context_stack.push(Context.new(MainMenu.new, :process_main_menu_input))
+      @process = @context_stack.top.process
+      @context_stack.top.menu.display_menu
+    end
+    
+    def context_transition(transition, input = nil)
+      send(transition, input)
+    end
+
     private
     
     def region_menu_transition(input)
       @process = :process_region_menu_input
-      @context_stack.push(Context.new(UserInterface::RegionMenu.new, @process))
+      @context_stack.push(Context.new(RegionMenu.new, @process))
       @context_stack.top.menu.display_menu
     end
     
     def summoner_name_menu_transition(input)
       @process = :process_summoner_name_menu_input
-      @context_stack.push(Context.new(UserInterface::SummonerNameMenu.new, @process, input))
+      @context_stack.push(Context.new(SummonerNameMenu.new, @process, input))
       @context_stack.top.menu.display_menu
     end
     
     def summoner_menu_transition(input)
       input = input.split(',')[0]
       server = @context_stack.top.args
-      request = Protocol::SummonerByName.create_request(server, [input])
-      response = Transport::send_request(request)
+      summoners = @service.request_summoners(server, [input])
 
-      if response[:status] == :success
-        menu = UserInterface::SummonerMenu.new
+      if 0 != summoners.size
+        menu = SummonerMenu.new
         @process = :process_summoner_menu_input
-        summoner_model = Model::Summoner.new(response[:json][input], server)
-        @context_stack.push(Context.new(menu, @process, summoner_model))
-        @context_stack.top.menu.display_summoner_info(summoner_model)
+        @context_stack.push(Context.new(menu, @process, summoners[0]))
+        @context_stack.top.menu.display_summoner_info(summoners[0])
       else
         # TODO: Call UI.displayerror
         puts "Summoner name #{input} not existing"
@@ -138,18 +178,15 @@ module Controller
     end
     
     def matches_menu_transition(input)
-      summoner_model = @context_stack.top.args
+      summoner = @context_stack.top.args
 
-      request = Protocol::GamesInfo.create_request(summoner_model.server, summoner_model.id)
-      response = Transport::send_request(request)
+      matches = @service.request_recent_games(summoner.server, summoner.id)
 
-      if response[:status] == :success
-        match_models = response[:json]["games"].map { |game_json| Model::Game.new(game_json) }
-        
+      if 0 != matches.size
         @process = :process_matches_menu_input
-        menu = UserInterface::MatchesMenu.new
-        menu.display_matches_info(match_models, @champions)
-        args = { matches: match_models, current_summoner: summoner_model }
+        menu = MatchesMenu.new
+        menu.display_matches_info(matches, @service.champions)
+        args = { matches: matches, current_summoner: summoner }
         @context_stack.push(Context.new(menu, @process, args))
       else
         # TODO: Call UI.displayerror
@@ -172,22 +209,23 @@ module Controller
       end
       
       if index != -1
-        current_summoner = Model::Game::FellowPlayer.new
-        current_summoner.summoner_id = summoner.id
-        current_summoner.team_id = matches[index].team_id
-        current_summoner.champion_id = matches[index].champion_id
+        current_summoner = @service.create_player(
+          summoner.id,
+          matches[index].team_id,
+          matches[index].champion_id
+        )
+
+        players = [current_summoner]
+        players += matches[index].fellow_players
+
+        blue_team, purple_team = @service.assign_players(players)
         
-        players = matches[index].fellow_players
-        players << current_summoner
-        
-        blue_team, purple_team = assign_players(players)
-        
-        blue_team.map! { |player| player_detailed_info(summoner.server, player) }
-        purple_team.map! { |player| player_detailed_info(summoner.server, player) }
+        blue_team.map! { |player| @service.player_detailed_info(summoner.server, player) }
+        purple_team.map! { |player| @service.player_detailed_info(summoner.server, player) }
         
         @process = :process_match_details_menu_input
-        menu = UserInterface::MatchDetails.new
-        menu.dislpay_match_details(matches[index], @items, blue_team, purple_team)
+        menu = MatchDetails.new
+        menu.dislpay_match_details(matches[index], @service.items, blue_team, purple_team)
         @context_stack.push(Context.new(menu, @process))
       else
         puts "Invalid game index"
@@ -198,25 +236,25 @@ module Controller
 
     def ranking_menu_transition(input)
       @process = :process_ranking_menu_input
-      @context_stack.push(Context.new(UserInterface::RankingMenu.new, @process))
+      @context_stack.push(Context.new(RankingMenu.new, @process))
       @context_stack.top.menu.display_menu
     end
     
     def champion_suggestion_menu_transition(input)
       @process = :process_champion_suggestion_menu_input
-      @context_stack.push(Context.new(UserInterface::ChampionSuggestionMenu.new, @process))
+      @context_stack.push(Context.new(ChampionSuggestionMenu.new, @process))
       @context_stack.top.menu.display_menu
     end
     
     def general_advice_menu_transition(input)
       @process = :process_general_advice_menu_input
-      @context_stack.push(Context.new(UserInterface::GeneralAdviceMenu.new, @process))
+      @context_stack.push(Context.new(GeneralAdviceMenu.new, @process))
       @context_stack.top.menu.display_menu
     end
     
     def ultimate_bravery_menu_transition(input)
       @process = :process_ultimate_bravery_menu_input
-      @context_stack.push(Context.new(UserInterface::UltimateBraveryMenu.new, @process))
+      @context_stack.push(Context.new(UltimateBraveryMenu.new, @process))
       @context_stack.top.menu.display_menu
     end
     
