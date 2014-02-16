@@ -1,6 +1,11 @@
 module UserInterface
   class BasicMenu
+    def initialize()
+      @data = ""
+    end
+    
     def display_menu()
+      puts @data
       puts 'B. Back'
       puts 'H. Home'
       puts 'Q. Quit'
@@ -44,33 +49,60 @@ module UserInterface
     end
     
     def display_summoner_info(summoner_model)
-      info = [
+      @data = [
         "----------------------------------------",
         "Server: #{summoner_model.server}",
         "Summoner name: #{summoner_model.name}",
         "Summoner level: #{summoner_model.level}",
         "----------------------------------------"
       ].join("\n")
-      
-      puts info
     end
   end
   
   class MatchesMenu < BasicMenu
     def display_matches_info(match_models, champion_models)
+      @data = []
       (1...match_models.size).each do |match_index|
-        puts [
+        match = match_models[match_index]
+        
+        champion = champion_models.select { |champion| match.champion_id == champion.id }[0].name
+        
+        @data << [
           "----------------------------------------",
           "Game #{match_index}",
-          "Champion: #{champion_models.select { |champion| match_models[match_index].champion_id == champion.id }[0].name}",
-          "Date: #{match_models[match_index].create_date}",
-          "Game Mode: #{match_models[match_index].game_mode}",
-          "Game Type: #{match_models[match_index].game_type}",
+          "Champion: #{champion}",
+          "Date: #{match.create_date}",
+          "Game Mode: #{match.game_mode}",
+          "Game Type: #{match.game_type}",
+          "Game Subtype: #{match.sub_type}",
           "----------------------------------------"
         ].join("\n")
-        
-        puts "Enter game number to see match details"
       end
+      
+      @data << "Enter game number to see match details"
+      @data.join("\n")
+    end
+  end
+  
+  class MatchDetails < BasicMenu
+    def dislpay_match_details(match_model)
+      stats = match_model.stats
+      @data = [
+        "----------------------------------------",
+        "Date: #{match_model.create_date}",
+        "Game Mode: #{match_model.game_mode}",
+        "Game Type: #{match_model.game_type}",
+        "Game Subtype: #{match_model.sub_type}",
+        "----------------------------------------",
+        "Match Stats:",
+        "Kills: #{stats.champions_killed}",
+        "Deaths: #{stats.champions_killed}",
+        "Assists: #{stats.assists}",
+        "Minions killed: #{stats.minions_killed}",
+        "Jungle monsters killed in your jungle: #{stats.neutral_minions_killed_your_jungle}",
+        "Jungle monsters killed in enemy jungle: #{stats.neutral_minions_killed_enemy_jungle}",
+        "----------------------------------------"
+      ].join("\n")
     end
   end
   

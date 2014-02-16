@@ -70,10 +70,21 @@ class MenuInputProcessor
     when 'b'
       @data_controller.context_transition(:back_transition)
     else
-      @data_controller.context_transition(:invalid_transition)
+      @data_controller.context_transition(:match_details_transition, input)
     end
   end
 
+  def process_match_details_menu_input(input)
+    case input
+    when 'h'
+      @data_controller.context_transition(:rollback_transition)
+    when 'b'
+      @data_controller.context_transition(:back_transition)
+    else
+      @data_controller.context_transition(:invalid_transition)
+    end
+  end
+  
   def process_ranking_menu_input(input)
     case input
     when 'h'

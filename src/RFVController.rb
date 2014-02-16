@@ -106,12 +106,34 @@ module Controller
         
         @process = :process_matches_menu_input
         menu = UserInterface::MatchesMenu.new
-        @context_stack.push(Context.new(UserInterface::MatchesMenu.new, @process))
-        
-        @context_stack.top.menu.display_matches_info(match_models, @champions)
+        menu.display_matches_info(match_models, @champions)
+        @context_stack.push(Context.new(menu, @process, match_models))
       else
         # TODO: Call UI.displayerror
         puts "Server error"
+      end
+      
+      @context_stack.top.menu.display_menu
+    end
+    
+    def match_details_transition(input)
+      matches = @context_stack.top.args
+      
+      if input == '0'
+        index = 0
+      elsif (input.to_i > 0) && (input.to_i < matches.size)
+        index = input.to_i
+      else
+        index = -1
+      end
+      
+      if index != -1
+        @process = :process_match_details_menu_input
+        menu = UserInterface::MatchDetails.new
+        menu.dislpay_match_details(matches[index])
+        @context_stack.push(Context.new(menu, @process))
+      else
+        puts "Invalid game index"
       end
       
       @context_stack.top.menu.display_menu
