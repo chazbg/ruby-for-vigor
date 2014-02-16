@@ -163,6 +163,9 @@ module UserInterface
   end
   
   class RankingMenu < BasicMenu
+    def display_ranking_stats(stats)
+      @data = stats
+    end
   end
   
   class ChampionSuggestionMenu < BasicMenu

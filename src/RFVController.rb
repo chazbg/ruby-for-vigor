@@ -78,13 +78,13 @@ module Controller
     end
       
     def player_detailed_info(server, player)
-      request = Protocol::SummonersByIds.create_request(server, [player.summoner_id])
+      request = SummonersByIds.create_request(server, [player.summoner_id])
       response = @transport.send_request(request)
       detailed_info = {}
       
       champion_name = @champions.select { |champion| player.champion_id == champion.id }[0].name
       if response[:status] == :success
-        summoner_info = Model::Summoner.new(response[:json][player.summoner_id.to_s])
+        summoner_info = Summoner.new(response[:json][player.summoner_id.to_s])
         detailed_info = {
           level: summoner_info.level,
           name: summoner_info.name,
@@ -125,6 +125,17 @@ module Controller
       player.team_id = team_id
       player.champion_id = champion_id
       player
+    end
+    
+    def request_ranking_stats(server, summoner_id, season)
+      request = SummonerRankedInfo.create_request(server, summoner_id, season)
+      response = @transport.send_request(request)
+
+      if response[:status] == :success
+        stats = RankedStats.new(response[:json])
+      else
+        nil
+      end
     end
   end
   
@@ -235,8 +246,20 @@ module Controller
     end
 
     def ranking_menu_transition(input)
-      @process = :process_ranking_menu_input
-      @context_stack.push(Context.new(RankingMenu.new, @process))
+      summoner = @context_stack.top.args
+      
+      ranked_stats = @service.request_ranking_stats(summoner.server, summoner.id, "season4")
+      
+      if nil != ranked_stats
+        @process = :process_ranking_menu_input
+        menu = RankingMenu.new
+        menu.display_ranking_stats(ranked_stats)
+        @context_stack.push(Context.new(menu, @process))
+      else
+        # TODO: Call UI.displayerror
+        puts "Server error"
+      end
+
       @context_stack.top.menu.display_menu
     end
     

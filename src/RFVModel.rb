@@ -154,4 +154,36 @@ module Model
       item_json[1]["into"] == nil ? @top_tier = true : @top_tier = false
     end
   end
+  
+  class RankedStats
+    attr_reader :champions
+    
+    class RankedChampion
+      attr_reader :name, :kills, :assists, :deaths, :first_bloods, :max_champions_killed, :minions_killed, :average_kills, :average_deaths, :average_assists, :average_minions, :first_blood_probability, :total_games
+      
+      def initialize(champion_json = {})
+        champion_json ||= {}
+        
+        @name = champion_json["name"] || ""
+        @kills = champion_json["stats"]["totalChampionKills"] || 0
+        @assists = champion_json["stats"]["totalAssists"] || 0
+        @deaths = champion_json["stats"]["totalDeathsPerSession"] || 0
+        @first_bloods = champion_json["stats"]["totalFirstBlood"] || 0
+        @max_champions_killed = champion_json["stats"]["maxChampionsKilled"] || 0
+        @minions_killed = champion_json["stats"]["totalMinionKills"] || 0
+        @total_games = champion_json["stats"]["totalSessionsPlayed"] || 0
+        @average_kills = @total_games > 0 ? @kills.to_f / @total_games : 0
+        @average_deaths = @total_games > 0 ? @deaths.to_f / @total_games : 0
+        @average_assists = @total_games > 0 ? @assists.to_f / @total_games : 0
+        @average_minions = @total_games > 0 ? @minions_killed.to_f / @total_games : 0
+        @first_blood_probability = @total_games > 0 ? @first_bloods.to_f / @total_games : 0
+      end
+    end
+    
+    def initialize(ranked_stats_json)
+      @champions = ranked_stats_json["champions"].map do |champion_json| 
+        RankedChampion.new(champion_json) 
+      end
+    end
+  end
 end
