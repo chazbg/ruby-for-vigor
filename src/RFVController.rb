@@ -96,9 +96,24 @@ module Controller
     end
     
     def matches_menu_transition(input)
-      @process = :process_matches_menu_input
-      current_summoner_id = @context_stack.top.args.id
-      @context_stack.push(Context.new(UserInterface::MatchesMenu.new, @process))
+      summoner_model = @context_stack.top.args
+
+      request = Protocol::GamesInfo.create_request(summoner_model.server, summoner_model.id)
+      response = Transport::send_request(request)
+
+      if response[:status] == :success
+        match_models = response[:json]["games"].map { |game_json| Model::Game.new(game_json) }
+        
+        @process = :process_matches_menu_input
+        menu = UserInterface::MatchesMenu.new
+        @context_stack.push(Context.new(UserInterface::MatchesMenu.new, @process))
+        
+        @context_stack.top.menu.display_matches_info(match_models, @champions)
+      else
+        # TODO: Call UI.displayerror
+        puts "Server error"
+      end
+      
       @context_stack.top.menu.display_menu
     end
     

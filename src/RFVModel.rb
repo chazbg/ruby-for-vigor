@@ -1,6 +1,8 @@
+require 'date'
+
 module Model
   class Summoner
-    attr_reader :server, :id, :name, :summoner_level
+    attr_reader :server, :id, :name, :level
     
     def initialize(summoner_json = {}, server = "")
       summoner_json ||= {}
@@ -8,7 +10,7 @@ module Model
       @server = server.upcase
       @id = summoner_json["id"] || 0
       @name = summoner_json["name"] || ""
-      @summoner_level = summoner_json["summonerLevel"] || 0
+      @level = summoner_json["summonerLevel"] || 0
     end
   end
   
@@ -113,7 +115,7 @@ module Model
     def initialize(game_json = {})
       game_json ||= {}
       @champion_id = game_json["championId"] || 0
-      @create_date = Date.new(game_json["createDate"] || 0)
+      @create_date = Time.at((game_json["createDate"] / 1000) || 0)
       @fellow_players = []
       (game_json["fellowPlayers"] || []).each { |player| @fellow_players << FellowPlayer.new(player) }
       @game_mode = game_json["gameMode"] || ""

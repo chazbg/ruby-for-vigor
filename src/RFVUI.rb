@@ -48,7 +48,7 @@ module UserInterface
         "----------------------------------------",
         "Server: #{summoner_model.server}",
         "Summoner name: #{summoner_model.name}",
-        "Summoner level: #{summoner_model.summoner_level}",
+        "Summoner level: #{summoner_model.level}",
         "----------------------------------------"
       ].join("\n")
       
@@ -57,8 +57,20 @@ module UserInterface
   end
   
   class MatchesMenu < BasicMenu
-    def display_matches_info(match_models)
-      p match_models.count
+    def display_matches_info(match_models, champion_models)
+      (1...match_models.size).each do |match_index|
+        puts [
+          "----------------------------------------",
+          "Game #{match_index}",
+          "Champion: #{champion_models.select { |champion| match_models[match_index].champion_id == champion.id }[0].name}",
+          "Date: #{match_models[match_index].create_date}",
+          "Game Mode: #{match_models[match_index].game_mode}",
+          "Game Type: #{match_models[match_index].game_type}",
+          "----------------------------------------"
+        ].join("\n")
+        
+        puts "Enter game number to see match details"
+      end
     end
   end
   
