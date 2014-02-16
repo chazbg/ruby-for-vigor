@@ -1,10 +1,11 @@
 module Model
   class Summoner
-    attr_reader :id, :name, :summoner_level
+    attr_reader :server, :id, :name, :summoner_level
     
-    def initialize(summoner_json = {})
+    def initialize(summoner_json = {}, server = "")
       summoner_json ||= {}
 
+      @server = server.upcase
       @id = summoner_json["id"] || 0
       @name = summoner_json["name"] || ""
       @summoner_level = summoner_json["summonerLevel"] || 0

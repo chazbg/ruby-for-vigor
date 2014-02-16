@@ -46,6 +46,7 @@ module UserInterface
     def display_summoner_info(summoner_model)
       info = [
         "----------------------------------------",
+        "Server: #{summoner_model.server}",
         "Summoner name: #{summoner_model.name}",
         "Summoner level: #{summoner_model.summoner_level}",
         "----------------------------------------"
@@ -56,6 +57,9 @@ module UserInterface
   end
   
   class MatchesMenu < BasicMenu
+    def display_matches_info(match_models)
+      p match_models.count
+    end
   end
   
   class RankingMenu < BasicMenu

@@ -77,13 +77,14 @@ module Controller
     
     def summoner_menu_transition(input)
       input = input.split(',')[0]
-      request = Protocol::SummonerByName.create_request(@context_stack.top.args, [input])
+      server = @context_stack.top.args
+      request = Protocol::SummonerByName.create_request(server, [input])
       response = Transport::send_request(request)
 
       if response[:status] == :success
         menu = UserInterface::SummonerMenu.new
         @process = :process_summoner_menu_input
-        summoner_model = Model::Summoner.new(response[:json][input])
+        summoner_model = Model::Summoner.new(response[:json][input], server)
         @context_stack.push(Context.new(menu, @process, summoner_model))
         @context_stack.top.menu.display_summoner_info(summoner_model)
       else
@@ -96,6 +97,7 @@ module Controller
     
     def matches_menu_transition(input)
       @process = :process_matches_menu_input
+      current_summoner_id = @context_stack.top.args.id
       @context_stack.push(Context.new(UserInterface::MatchesMenu.new, @process))
       @context_stack.top.menu.display_menu
     end
