@@ -1,24 +1,24 @@
-require_relative 'RFVTransport.rb'
-require_relative 'RFVProtocol.rb'
-require_relative 'RFVModel.rb'
-require_relative 'RFVUI.rb'
+require_relative 'RFVTransport'
+require_relative 'RFVProtocol'
+require_relative 'RFVModel'
+require_relative 'RFVUI'
 
 module Controller
   class Context
     attr_reader :menu, :process, :args
-    
+
     def initialize(menu, process, args = nil)
       @menu = menu
       @process = process
       @args = args
     end
   end
-  
+
   class ContextStack
     def initialize(array = [])
       @stack = array
     end
-    
+
     def push(context)
       @stack << context
     end
@@ -26,180 +26,119 @@ module Controller
     def top()
       @stack.last
     end
-    
+
     def pop()
       @stack.pop
     end
-    
+
     def rollback()
       @stack = [@stack[0]]
     end
   end
   
   class DataController
+    attr_reader :process
     def initialize()
       # Download static data - champions, runes, masteries, items
       champions_response = Transport::send_request(Protocol::Champions.create_request("NA"))
 
       if :success == champions_response[:status]
-        @champions = champions_response[:json]["champions"].map do |champion_json| 
-          Model::Champion.new(champion_json) 
+        @champions = champions_response[:json]["champions"].map do |champion_json|
+          Model::Champion.new(champion_json)
         end
       end
-      
+
       # @champions.each { |champion| p champion}
-      
+
       @context_stack = ContextStack.new
-      
+
       @context_stack.push(Context.new(UserInterface::MainMenu.new, :process_main_menu_input))
-      
-      main_loop
+      @process = @context_stack.top.process
+      @context_stack.top.menu.display_menu
+    end
+    
+    def context_transition(transition, input = nil)
+      send(transition, input)
     end
     
     private
     
-    def main_loop()
+    def region_menu_transition(input)
+      @process = :process_region_menu_input
+      @context_stack.push(Context.new(UserInterface::RegionMenu.new, @process))
       @context_stack.top.menu.display_menu
-      while (input = gets.chomp.downcase) != 'q' do
-        send(@context_stack.top.process, input)
-        @context_stack.top.menu.display_menu
-      end
     end
     
-    def process_main_menu_input(input)
-      case input
-      when '1'
-        process = :process_region_menu_input
-        @context_stack.push(Context.new(UserInterface::RegionMenu.new, process))
-      when '2'
-        process = :process_ultimate_bravery_menu_input
-        @context_stack.push(Context.new(UserInterface::UltimateBraveryMenu.new, process))
-      else
-        # TODO: Call UI.displayerror
-        puts "Incorrect option"
-      end
+    def summoner_name_menu_transition(input)
+      @process = :process_summoner_name_menu_input
+      @context_stack.push(Context.new(UserInterface::SummonerNameMenu.new, @process, input))
+      @context_stack.top.menu.display_menu
     end
     
-    def process_region_menu_input(input)
-      case input
-      when 'na', 'euw', 'eune', 'kr', 'br'
-        process = :process_summoner_name_menu_input
-        @context_stack.push(Context.new(UserInterface::SummonerNameMenu.new, process, input))
-      when 'b'
-        @context_stack.pop
-      else
-        # TODO: Call UI.displayerror
-        puts "Incorrect option"
-      end
-    end
-    
-    def process_summoner_name_menu_input(input)
-      case input
-      when 'h'
-        @context_stack.rollback
-      when 'b'
-        @context_stack.pop
-      else
-        request = Protocol::SummonerByName.create_request(@context_stack.top.args, [input])
-        response = Transport::send_request(request)
-        
-        if response[:status] == :success
-          process = :process_summoner_menu_input
-          
-          summoner_model = Model::Summoner.new(response[:json][input])
-          @context_stack.push(Context.new(UserInterface::SummonerMenu.new, process, summoner_model))
-          @context_stack.top.menu.display_summoner_info(summoner_model)
-        else
-          # TODO: Call UI.displayerror
-          puts "Summoner name #{input} not existing"
-        end
-      end
-    end
-    
-    def process_summoner_menu_input(input)
-      case input
-      when '1'
-        process = :process_matches_menu_input
-        @context_stack.push(Context.new(UserInterface::MatchesMenu.new, process))
-      when '2'
-        process = :process_ranking_menu_input
-        @context_stack.push(Context.new(UserInterface::RankingMenu.new, process))
-      when '3'
-        process = :process_champion_suggestion_menu_input
-        @context_stack.push(Context.new(UserInterface::ChampionSuggestionMenu.new, process))
-      when '4'
-        process = :process_general_advice_menu_input
-        @context_stack.push(Context.new(UserInterface::GeneralAdviceMenu.new, process))
-      when 'h'
-        @context_stack.rollback
-      when 'b'
-        @context_stack.pop
-      else
-        # TODO: Call UI.displayerror
-        puts "Incorrect option"
-      end
-    end
-    
-    def process_matches_menu_input(input)
-      case input
-      when 'h'
-        @context_stack.rollback
-      when 'b'
-        @context_stack.pop
-      else
-        # TODO: Call UI.displayerror
-        puts "Incorrect option"
-      end
-    end
-    
-    def process_ranking_menu_input(input)
-      case input
-      when 'h'
-        @context_stack.rollback
-      when 'b'
-        @context_stack.pop
-      else
-        # TODO: Call UI.displayerror
-        puts "Incorrect option"
-      end
-    end
-    
-    def process_champion_suggestion_menu_input(input)
-      case input
-      when 'h'
-        @context_stack.rollback
-      when 'b'
-        @context_stack.pop
-      else
-        # TODO: Call UI.displayerror
-        puts "Incorrect option"
-      end
-    end
-    
-    def process_general_advice_menu_input(input)
-      case input
-      when 'h'
-        @context_stack.rollback
-      when 'b'
-        @context_stack.pop
-      else
-        # TODO: Call UI.displayerror
-        puts "Incorrect option"
-      end
-    end
+    def summoner_menu_transition(input)
+      input = input.split(',')[0]
+      request = Protocol::SummonerByName.create_request(@context_stack.top.args, [input])
+      response = Transport::send_request(request)
 
-    def process_ultimate_bravery_menu_input(input)
-      case input
-      when 'h'
-        @context_stack.rollback
-      when 'b'
-        @context_stack.pop
+      if response[:status] == :success
+        menu = UserInterface::SummonerMenu.new
+        @process = :process_summoner_menu_input
+        summoner_model = Model::Summoner.new(response[:json][input])
+        @context_stack.push(Context.new(menu, @process, summoner_model))
+        @context_stack.top.menu.display_summoner_info(summoner_model)
       else
         # TODO: Call UI.displayerror
-        puts "Incorrect option"
+        puts "Summoner name #{input} not existing"
       end
+
+      @context_stack.top.menu.display_menu
+    end
+    
+    def matches_menu_transition(input)
+      @process = :process_matches_menu_input
+      @context_stack.push(Context.new(UserInterface::MatchesMenu.new, @process))
+      @context_stack.top.menu.display_menu
+    end
+    
+    def ranking_menu_transition(input)
+      @process = :process_ranking_menu_input
+      @context_stack.push(Context.new(UserInterface::RankingMenu.new, @process))
+      @context_stack.top.menu.display_menu
+    end
+    
+    def champion_suggestion_menu_transition(input)
+      @process = :process_champion_suggestion_menu_input
+      @context_stack.push(Context.new(UserInterface::ChampionSuggestionMenu.new, @process))
+      @context_stack.top.menu.display_menu
+    end
+    
+    def general_advice_menu_transition(input)
+      @process = :process_general_advice_menu_input
+      @context_stack.push(Context.new(UserInterface::GeneralAdviceMenu.new, @process))
+      @context_stack.top.menu.display_menu
+    end
+    
+    def ultimate_bravery_menu_transition(input)
+      @process = :process_ultimate_bravery_menu_input
+      @context_stack.push(Context.new(UserInterface::UltimateBraveryMenu.new, @process))
+      @context_stack.top.menu.display_menu
+    end
+    
+    def back_transition(input)
+      @context_stack.pop
+      @process = @context_stack.top.process
+      @context_stack.top.menu.display_menu
+    end
+    
+    def rollback_transition(input)
+      @context_stack.rollback
+      @process = @context_stack.top.process
+      @context_stack.top.menu.display_menu
+    end
+    
+    def invalid_transition(input)
+      puts "Invalid option"
+      @context_stack.top.menu.display_menu
     end
   end
-  
-  data_controller = DataController.new
 end

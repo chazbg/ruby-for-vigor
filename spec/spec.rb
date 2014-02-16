@@ -299,10 +299,7 @@ module Model
 end
 
 module Controller
-  describe "Controller" do
-    describe "Context" do
-    end
-    
+  describe "Controller" do    
     describe "ContextStack" do
       it "Pushes contexts correctly" do
         stack = ContextStack.new
