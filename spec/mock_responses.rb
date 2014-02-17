@@ -1,3 +1,5 @@
+#CHAMPIONS, FELLOW_PLAYERS, GAME_STATS, GAMES, CHALLENGER, ENTRY, LEAGUE, SUMMARY, MASTERIES, RUNES, SUMMONER_BY_NAME, RANKED_STATS, SUMMONER_SPELLS, ITEMS
+
 CHAMPIONS = '{"champions": [
         {
           "botMmEnabled": false,
@@ -2872,6 +2874,1329 @@ SUMMONER_SPELLS = '
       }
    },
    "type": "summoner",
+   "version": "4.2.6"
+}
+'.freeze
+
+ITEMS = '
+  {
+   "basic": {
+      "tags": null,
+      "plaintext": null,
+      "stats": {
+         "rFlatArmorModPerLevel": 0,
+         "rFlatSpellBlockModPerLevel": 0,
+         "rFlatPhysicalDamageModPerLevel": 0,
+         "rFlatTimeDeadMod": 0,
+         "rFlatTimeDeadModPerLevel": 0,
+         "rFlatCritDamageModPerLevel": 0,
+         "rFlatMagicDamageModPerLevel": 0,
+         "rFlatCritChanceModPerLevel": 0,
+         "rFlatDodgeModPerLevel": 0,
+         "rPercentMagicPenetrationModPerLevel": 0,
+         "rFlatHPModPerLevel": 0,
+         "rPercentMovementSpeedModPerLevel": 0,
+         "rPercentMagicPenetrationMod": 0,
+         "rPercentTimeDeadModPerLevel": 0,
+         "rFlatHPRegenModPerLevel": 0,
+         "rFlatGoldPer10Mod": 0,
+         "rPercentAttackSpeedModPerLevel": 0,
+         "rFlatMagicPenetrationMod": 0,
+         "rPercentArmorPenetrationMod": 0,
+         "rFlatMPRegenModPerLevel": 0,
+         "rFlatDodgeMod": 0,
+         "rFlatArmorPenetrationModPerLevel": 0,
+         "rFlatMagicPenetrationModPerLevel": 0,
+         "rPercentTimeDeadMod": 0,
+         "rPercentCooldownModPerLevel": 0,
+         "rFlatMovementSpeedModPerLevel": 0,
+         "rPercentCooldownMod": 0,
+         "rPercentArmorPenetrationModPerLevel": 0,
+         "rFlatMPModPerLevel": 0,
+         "rFlatArmorPenetrationMod": 0
+      },
+      "consumeOnFull": false,
+      "into": null,
+      "image": null,
+      "colloq": ";",
+      "stacks": 1,
+      "from": null,
+      "rune": {
+         "tier": "1",
+         "type": "red"
+      },
+      "depth": 1,
+      "requiredChampion": null,
+      "inStore": true,
+      "specialRecipe": 0,
+      "consumed": false,
+      "maps": {
+         "10": true,
+         "1": true,
+         "8": true,
+         "12": true
+      },
+      "hideFromAll": false,
+      "description": null,
+      "name": null,
+      "gold": {
+         "total": 0,
+         "purchasable": false,
+         "sell": 0,
+         "base": 0
+      },
+      "group": null
+   },
+   "data": {
+      "3089": {
+         "plaintext": "Massively increases Ability Power",
+         "name": "Rabadon\'s Deathcap"
+      },
+      "2009": {"name": "Total Biscuit of Rejuvenation"},
+      "3087": {
+         "plaintext": "Movement builds charges that release chain lightning on basic attack",
+         "name": "Statikk Shiv"
+      },
+      "3086": {
+         "plaintext": "Slight bonuses to Critical Strike Chance, Movement Speed and Attack Speed",
+         "name": "Zeal",
+         "into": [
+            "3046",
+            "3078",
+            "3087"
+         ]
+      },
+      "2004": {
+         "plaintext": "Consume to restore Mana over time",
+         "name": "Mana Potion",
+         "group": "ManaPotion"
+      },
+      "3085": {
+         "plaintext": "Ranged attacks fire two bolts at nearby enemies",
+         "name": "Runaan\'s Hurricane (Ranged Only)"
+      },
+      "3280": {
+         "name": "Enchantment: Homeguard",
+         "group": "BootsHomeguard"
+      },
+      "3084": {
+         "plaintext": "Restores Health on kill or assist",
+         "name": "Overlord\'s Bloodmail"
+      },
+      "3083": {
+         "plaintext": "Grants massive Health and Health Regen",
+         "name": "Warmog\'s Armor"
+      },
+      "2003": {
+         "plaintext": "Consume to restore Health over time",
+         "name": "Health Potion",
+         "group": "HealthPotion"
+      },
+      "3282": {
+         "name": "Enchantment: Furor",
+         "group": "BootsFuror"
+      },
+      "3082": {
+         "plaintext": "Slows Attack Speed of enemy champions when receiving basic attacks",
+         "name": "Warden\'s Mail",
+         "into": [
+            "3110",
+            "3143"
+         ]
+      },
+      "3281": {
+         "name": "Enchantment: Captain",
+         "group": "BootsCaptain"
+      },
+      "3284": {
+         "name": "Enchantment: Alacrity",
+         "group": "BootsAlacrity"
+      },
+      "3283": {
+         "name": "Enchantment: Distortion",
+         "group": "BootsDistortion"
+      },
+      "3278": {
+         "name": "Enchantment: Distortion",
+         "group": "BootsDistortion"
+      },
+      "3279": {
+         "name": "Enchantment: Alacrity",
+         "group": "BootsAlacrity"
+      },
+      "2010": {
+         "name": "Total Biscuit of Rejuvenation",
+         "group": "HealthPotion"
+      },
+      "3098": {
+         "plaintext": "Grants gold when you damage an enemy with a Spell or Attack",
+         "name": "Frostfang",
+         "into": ["3092"],
+         "group": "GoldBase"
+      },
+      "1080": {
+         "plaintext": "Moderately increases damage dealt to neutral monsters",
+         "name": "Spirit Stone",
+         "into": [
+            "3206",
+            "3207",
+            "3209"
+         ]
+      },
+      "3290": {
+         "plaintext": "Summon wraiths to slow and reveal enemy champions",
+         "name": "Twin Shadows"
+      },
+      "3097": {
+         "plaintext": "Periodically kill enemy minions to heal and grant gold to a nearby ally",
+         "name": "Targon\'s Brace",
+         "into": ["3401"],
+         "group": "GoldBase"
+      },
+      "3096": {
+         "plaintext": "Grants gold when nearby enemy minions die, Health Regen and Mana Regen",
+         "name": "Nomad\'s Medallion",
+         "into": [
+            "3069",
+            "3222"
+         ],
+         "group": "GoldBase"
+      },
+      "3091": {
+         "plaintext": "Deals bonus magic damage on basic attacks",
+         "name": "Wit\'s End"
+      },
+      "3090": {
+         "plaintext": "Massively increases Ability Power and can be activated to enter stasis",
+         "name": "Wooglet\'s Witchcap"
+      },
+      "3093": {
+         "plaintext": "Grants gold over time and additional gold on kill",
+         "name": "Avarice Blade",
+         "into": [
+            "3142",
+            "3005",
+            "3087",
+            "3123"
+         ]
+      },
+      "3092": {
+         "plaintext": "Chills target opponent, dealing damage and slowing Movement Speed",
+         "name": "Frost Queen\'s Claim",
+         "group": "GoldBase"
+      },
+      "1063": {
+         "plaintext": "Good starting item for casters",
+         "name": "Prospector\'s Ring"
+      },
+      "1062": {
+         "plaintext": "Good starting item for attackers",
+         "name": "Prospector\'s Blade"
+      },
+      "1058": {
+         "plaintext": "Greatly increases Ability Power",
+         "name": "Needlessly Large Rod",
+         "into": [
+            "3089",
+            "3157",
+            "3128"
+         ]
+      },
+      "1056": {
+         "plaintext": "Good starting item for casters",
+         "name": "Doran\'s Ring"
+      },
+      "1057": {
+         "plaintext": "Moderately increases Magic Resist",
+         "name": "Negatron Cloak",
+         "into": [
+            "3001",
+            "3140",
+            "3180",
+            "3112",
+            "3026",
+            "3211",
+            "3170"
+         ]
+      },
+      "3110": {
+         "plaintext": "Massively increases Armor and slows enemy basic attacks",
+         "name": "Frozen Heart"
+      },
+      "3111": {
+         "plaintext": "Increases Movement Speed and reduces duration of disabling effects",
+         "name": "Mercury\'s Treads",
+         "into": [
+            "3269",
+            "3268",
+            "3267",
+            "3266",
+            "3265"
+         ]
+      },
+      "3112": {
+         "plaintext": "Grants a shield when out of combat",
+         "name": "Orb of Winter"
+      },
+      "3106": {
+         "plaintext": "Basic attacks kill minions and monsters quickly",
+         "name": "Madred\'s Razors",
+         "into": ["3154"]
+      },
+      "3108": {
+         "plaintext": "Increases Ability Power and Cooldown Reduction",
+         "name": "Fiendish Codex",
+         "into": [
+            "3115",
+            "3174",
+            "3165",
+            "3128",
+            "3060",
+            "3188",
+            "3187",
+            "3206"
+         ]
+      },
+      "3102": {
+         "plaintext": "Periodically blocks enemy abilities",
+         "name": "Banshee\'s Veil"
+      },
+      "3105": {
+         "plaintext": "Improves defenses for nearby allies",
+         "name": "Aegis of the Legion",
+         "into": ["3190"]
+      },
+      "3104": {
+         "plaintext": "Massively enhances critical strikes",
+         "name": "Lord Van Damm\'s Pillager"
+      },
+      "3100": {
+         "plaintext": "Grants a bonus to next attack after spell cast",
+         "name": "Lich Bane"
+      },
+      "3250": {
+         "name": "Enchantment: Homeguard",
+         "group": "BootsHomeguard"
+      },
+      "3101": {
+         "plaintext": "Increased Attack Speed and Cooldown Reduction",
+         "name": "Stinger",
+         "into": [
+            "3115",
+            "3172"
+         ]
+      },
+      "3251": {
+         "name": "Enchantment: Captain",
+         "group": "BootsCaptain"
+      },
+      "3254": {
+         "name": "Enchantment: Alacrity",
+         "group": "BootsAlacrity"
+      },
+      "3255": {
+         "name": "Enchantment: Homeguard",
+         "group": "BootsHomeguard"
+      },
+      "3252": {
+         "name": "Enchantment: Furor",
+         "group": "BootsFuror"
+      },
+      "3253": {
+         "name": "Enchantment: Distortion",
+         "group": "BootsDistortion"
+      },
+      "3263": {
+         "name": "Enchantment: Distortion",
+         "group": "BootsDistortion"
+      },
+      "3264": {
+         "name": "Enchantment: Alacrity",
+         "group": "BootsAlacrity"
+      },
+      "3265": {
+         "name": "Enchantment: Homeguard",
+         "group": "BootsHomeguard"
+      },
+      "3266": {
+         "name": "Enchantment: Captain",
+         "group": "BootsCaptain"
+      },
+      "3260": {
+         "name": "Enchantment: Homeguard",
+         "group": "BootsHomeguard"
+      },
+      "3261": {
+         "name": "Enchantment: Captain",
+         "group": "BootsCaptain"
+      },
+      "3262": {
+         "name": "Enchantment: Furor",
+         "group": "BootsFuror"
+      },
+      "3361": {
+         "plaintext": "Periodically place a Stealth Ward",
+         "name": "Greater Stealth Totem (Trinket)",
+         "group": "RelicBase"
+      },
+      "3362": {
+         "plaintext": "Periodically place a Vision Ward",
+         "name": "Greater Vision Totem (Trinket)",
+         "group": "RelicBase"
+      },
+      "3363": {
+         "plaintext": "Disables nearby invisible wards and trap and grants true sight briefly",
+         "name": "Farsight Orb (Trinket)",
+         "group": "RelicBase"
+      },
+      "3364": {
+         "plaintext": "Briefly reveals a targetted area",
+         "name": "Oracle\'s Lens (Trinket)",
+         "group": "RelicBase"
+      },
+      "3257": {
+         "name": "Enchantment: Furor",
+         "group": "BootsFuror"
+      },
+      "3256": {
+         "name": "Enchantment: Captain",
+         "group": "BootsCaptain"
+      },
+      "3259": {
+         "name": "Enchantment: Alacrity",
+         "group": "BootsAlacrity"
+      },
+      "3258": {
+         "name": "Enchantment: Distortion",
+         "group": "BootsDistortion"
+      },
+      "3276": {
+         "name": "Enchantment: Captain",
+         "group": "BootsCaptain"
+      },
+      "3277": {
+         "name": "Enchantment: Furor",
+         "group": "BootsFuror"
+      },
+      "3274": {
+         "name": "Enchantment: Alacrity",
+         "group": "BootsAlacrity"
+      },
+      "3275": {
+         "name": "Enchantment: Homeguard",
+         "group": "BootsHomeguard"
+      },
+      "3272": {
+         "name": "Enchantment: Furor",
+         "group": "BootsFuror"
+      },
+      "3273": {
+         "name": "Enchantment: Distortion",
+         "group": "BootsDistortion"
+      },
+      "3270": {
+         "name": "Enchantment: Homeguard",
+         "group": "BootsHomeguard"
+      },
+      "3271": {
+         "name": "Enchantment: Captain",
+         "group": "BootsCaptain"
+      },
+      "3269": {
+         "name": "Enchantment: Alacrity",
+         "group": "BootsAlacrity"
+      },
+      "3268": {
+         "name": "Enchantment: Distortion",
+         "group": "BootsDistortion"
+      },
+      "3267": {
+         "name": "Enchantment: Furor",
+         "group": "BootsFuror"
+      },
+      "1004": {
+         "plaintext": "Slightly increases Mana Regen",
+         "name": "Faerie Charm",
+         "into": [
+            "3152",
+            "3028",
+            "3070",
+            "3073",
+            "1080",
+            "3069",
+            "3165"
+         ]
+      },
+      "1001": {
+         "plaintext": "Slightly increases Movement Speed",
+         "name": "Boots of Speed",
+         "into": [
+            "3006",
+            "3047",
+            "3020",
+            "3158",
+            "3111",
+            "3117",
+            "3009"
+         ],
+         "group": "BootsNormal"
+      },
+      "3146": {
+         "plaintext": "Increases Attack Damage and Ability Power, activate to slow a target",
+         "name": "Hextech Gunblade"
+      },
+      "1006": {
+         "plaintext": "Slightly increases Health Regen",
+         "name": "Rejuvenation Bead",
+         "into": [
+            "3077",
+            "3097",
+            "3112",
+            "3083",
+            "1080",
+            "2051",
+            "3105"
+         ]
+      },
+      "3005": {
+         "plaintext": "Increases Attack Damage based on maximum Health",
+         "name": "Atma\'s Impaler"
+      },
+      "3006": {
+         "plaintext": "Enhances Movement Speed and Attack Speed",
+         "name": "Berserker\'s Greaves",
+         "into": [
+            "3254",
+            "3253",
+            "3252",
+            "3251",
+            "3250"
+         ]
+      },
+      "3003": {
+         "plaintext": "Increases Ability Power based on maximum Mana",
+         "name": "Archangel\'s Staff",
+         "into": ["3040"]
+      },
+      "3004": {
+         "plaintext": "Increases Attack Damage based on maximum Mana",
+         "name": "Manamune",
+         "into": ["3042"]
+      },
+      "3009": {
+         "plaintext": "Enhances Movement Speed and reduces the effect of slows",
+         "name": "Boots of Swiftness",
+         "into": [
+            "3284",
+            "3283",
+            "3282",
+            "3281",
+            "3280"
+         ]
+      },
+      "3007": {
+         "plaintext": "Increases Ability Power based on maximum Mana",
+         "name": "Archangel\'s Staff (Crystal Scar)",
+         "into": ["3048"]
+      },
+      "3008": {
+         "plaintext": "Increases Attack Damage based on maximum Mana",
+         "name": "Manamune (Crystal Scar)",
+         "into": ["3043"]
+      },
+      "3342": {
+         "plaintext": "Briefly reveals a targeted area",
+         "name": "Scrying Orb (Trinket)",
+         "into": ["3352"],
+         "group": "RelicBase"
+      },
+      "3341": {
+         "plaintext": "Detects and disables nearby invisible wards and traps",
+         "name": "Sweeping Lens (Trinket)",
+         "into": ["3351"],
+         "group": "RelicBase"
+      },
+      "3340": {
+         "plaintext": "Periodically place a Stealth Ward",
+         "name": "Warding Totem (Trinket)",
+         "into": ["3350"],
+         "group": "RelicBase"
+      },
+      "3010": {
+         "plaintext": "Restores Health and Mana upon leveling up",
+         "name": "Catalyst the Protector",
+         "into": [
+            "3027",
+            "3029",
+            "3180"
+         ]
+      },
+      "3156": {
+         "plaintext": "Grants bonus Attack Damage when Health is low",
+         "name": "Maw of Malmortius"
+      },
+      "3155": {
+         "plaintext": "Increases Attack Damage and Magic Resist",
+         "name": "Hexdrinker",
+         "into": ["3156"]
+      },
+      "3154": {
+         "plaintext": "Kills monsters quickly and gain more gold, activate to place a ward",
+         "name": "Wriggle\'s Lantern",
+         "group": "GoldBase"
+      },
+      "3153": {
+         "plaintext": "Deals damage based on target\'s Health, can steal Health and Movement Speed",
+         "name": "Blade of the Ruined King"
+      },
+      "1011": {
+         "plaintext": "Greatly increases Health",
+         "name": "Giant\'s Belt",
+         "into": [
+            "3083",
+            "3022",
+            "3068",
+            "3116",
+            "3084",
+            "3143"
+         ]
+      },
+      "3152": {
+         "plaintext": "Grants Spell Vamp and Ability Power",
+         "name": "Will of the Ancients"
+      },
+      "3200": {
+         "plaintext": "Increases Ability Power and can be upgraded to improve Viktor\'s abilities",
+         "name": "The Hex Core",
+         "into": [
+            "3196",
+            "3197",
+            "3198"
+         ]
+      },
+      "3151": {
+         "plaintext": "Spell damage burns enemies for a portion of their Health",
+         "name": "Liandry\'s Torment"
+      },
+      "3139": {
+         "plaintext": "Activate to remove all debuffs and grant massive Movement Speed",
+         "name": "Mercurial Scimitar"
+      },
+      "3135": {
+         "plaintext": "Increases magic damage",
+         "name": "Void Staff"
+      },
+      "3136": {
+         "plaintext": "Increases magic damage",
+         "name": "Haunting Guise",
+         "into": ["3151"]
+      },
+      "3206": {
+         "plaintext": "Greatly increases damage dealt to monsters and gains Health and Mana from monsters",
+         "name": "Spirit of the Spectral Wraith",
+         "group": "GoldBase"
+      },
+      "3207": {
+         "plaintext": "Greatly increases damage dealt to monsters and reduces duration of disabling effects",
+         "name": "Spirit of the Ancient Golem",
+         "group": "GoldBase"
+      },
+      "3209": {
+         "plaintext": "Greatly increases damage dealt to monsters and deals true damage on basic attacks",
+         "name": "Spirit of the Elder Lizard",
+         "group": "GoldBase"
+      },
+      "3352": {
+         "plaintext": "Briefly reveals a targetted area",
+         "name": "Greater Orb (Trinket)",
+         "into": ["3363"],
+         "group": "RelicBase"
+      },
+      "3351": {
+         "plaintext": "Detects and disables nearby invisible wards and traps",
+         "name": "Greater Lens (Trinket)",
+         "into": ["3364"],
+         "group": "RelicBase"
+      },
+      "3350": {
+         "plaintext": "Periodically place a Stealth Ward",
+         "name": "Greater Totem (Trinket)",
+         "into": [
+            "3361",
+            "3362"
+         ],
+         "group": "RelicBase"
+      },
+      "3001": {
+         "plaintext": "Reduces Magic Resist of nearby enemies",
+         "name": "Abyssal Scepter"
+      },
+      "3143": {
+         "plaintext": "Greatly increases defenses, activate to slow nearby enemies",
+         "name": "Randuin\'s Omen"
+      },
+      "3142": {
+         "plaintext": "Activate to greatly increase Movement Speed and Attack Speed",
+         "name": "Youmuu\'s Ghostblade"
+      },
+      "3145": {
+         "plaintext": "Increases Spell Vamp and Ability Power",
+         "name": "Hextech Revolver",
+         "into": [
+            "3146",
+            "3152"
+         ]
+      },
+      "3401": {
+         "plaintext": "Shield an ally from damage based on your Health",
+         "name": "Face of the Mountain",
+         "group": "GoldBase"
+      },
+      "3144": {
+         "plaintext": "Activate to deal magic damage and slow target champion",
+         "name": "Bilgewater Cutlass",
+         "into": [
+            "3146",
+            "3153"
+         ]
+      },
+      "3141": {
+         "plaintext": "Grants Attack Damage for kills and assists",
+         "name": "Sword of the Occult"
+      },
+      "3211": {
+         "plaintext": "Improves defense and grants regeneration upon being damage",
+         "name": "Spectre\'s Cowl",
+         "into": [
+            "3065",
+            "3102"
+         ]
+      },
+      "3140": {
+         "plaintext": "Activate to remove all debuffs",
+         "name": "Quicksilver Sash",
+         "into": ["3139"]
+      },
+      "3124": {
+         "plaintext": "Increases Ability Power and Attack Damage",
+         "name": "Guinsoo\'s Rageblade"
+      },
+      "3128": {
+         "plaintext": "Activate to increase all magic damage dealt to an enemy champion",
+         "name": "Deathfire Grasp"
+      },
+      "3029": {
+         "plaintext": "Greatly increases Health, Mana, and Ability Power",
+         "name": "Rod of Ages (Crystal Scar)"
+      },
+      "3027": {
+         "plaintext": "Greatly increases Health, Mana, and Ability Power",
+         "name": "Rod of Ages"
+      },
+      "3028": {
+         "plaintext": "Greatly increases Mana Regen",
+         "name": "Chalice of Harmony",
+         "into": [
+            "3174",
+            "3222"
+         ]
+      },
+      "3025": {
+         "plaintext": "Basic attacks create a slow field after spell cast",
+         "name": "Iceborn Gauntlet"
+      },
+      "3026": {
+         "plaintext": "Periodically revives champion upon death",
+         "name": "Guardian Angel"
+      },
+      "3035": {
+         "plaintext": "Increases physical damage",
+         "name": "Last Whisper"
+      },
+      "3031": {
+         "plaintext": "Massively enhances critical strikes",
+         "name": "Infinity Edge"
+      },
+      "3222": {
+         "plaintext": "Activate to heal and remove all disabling effects from an allied champion",
+         "name": "Mikael\'s Crucible"
+      },
+      "3134": {
+         "plaintext": "Increases physical damage and Cooldown Reduction",
+         "name": "The Brutalizer",
+         "into": [
+            "3142",
+            "3071"
+         ]
+      },
+      "3131": {
+         "plaintext": "Activate to gain 100% Critical Strike Chance for a short duration",
+         "name": "Sword of the Divine"
+      },
+      "3115": {
+         "plaintext": "Increases Attack Speed, Ability Power, and Cooldown Reduction",
+         "name": "Nashor\'s Tooth"
+      },
+      "3116": {
+         "plaintext": "Abilities slow enemies",
+         "name": "Rylai\'s Crystal Scepter"
+      },
+      "3117": {
+         "plaintext": "Greatly enhances Movement Speed when out of combat",
+         "name": "Boots of Mobility",
+         "into": [
+            "3274",
+            "3273",
+            "3272",
+            "3271",
+            "3270"
+         ]
+      },
+      "3022": {
+         "plaintext": "Basic attacks slow enemies",
+         "name": "Frozen Mallet"
+      },
+      "3024": {
+         "plaintext": "Increases Armor and Cooldown Reduction",
+         "name": "Glacial Shroud",
+         "into": [
+            "3110",
+            "3025"
+         ]
+      },
+      "3023": {
+         "plaintext": "Summon wraiths to slow and reveal enemy champions",
+         "name": "Twin Shadows"
+      },
+      "3020": {
+         "plaintext": "Enhances Movement Speed and magic damage",
+         "name": "Sorcerer\'s Shoes",
+         "into": [
+            "3259",
+            "3258",
+            "3257",
+            "3256",
+            "3255"
+         ]
+      },
+      "3123": {
+         "plaintext": "Basic attacks reduce enemy healing and Health Regen",
+         "name": "Executioner\'s Calling"
+      },
+      "3122": {
+         "plaintext": "Critical Strikes cause your target to bleed.",
+         "name": "Wicked Hatchet",
+         "into": ["3104"]
+      },
+      "3048": {"name": "Seraph\'s Embrace"},
+      "3047": {
+         "plaintext": "Enhances Movement Speed and reduces incoming basic attack damage",
+         "name": "Ninja Tabi",
+         "into": [
+            "3264",
+            "3263",
+            "3262",
+            "3261",
+            "3260"
+         ]
+      },
+      "2050": {"name": "Explorer\'s Ward"},
+      "2051": {
+         "plaintext": "Activate for Movement Speed and a defensive boost",
+         "name": "Guardian\'s Horn"
+      },
+      "2052": {
+         "name": "Poro-Snax",
+         "group": "RelicBase"
+      },
+      "1051": {
+         "plaintext": "Slightly increases Critical Strike Chance",
+         "name": "Brawler\'s Gloves",
+         "into": [
+            "3086",
+            "3093",
+            "3122"
+         ]
+      },
+      "3197": {
+         "plaintext": "Improves Viktor\'s Gravity Field and increases Cooldown Reduction",
+         "name": "Augment: Gravity"
+      },
+      "3198": {
+         "plaintext": "Improves Viktor\'s Death Ray and increases Ability Power",
+         "name": "Augment: Death"
+      },
+      "1054": {
+         "plaintext": "Good defensive starting item",
+         "name": "Doran\'s Shield"
+      },
+      "1055": {
+         "plaintext": "Good starting item for attackers",
+         "name": "Doran\'s Blade"
+      },
+      "3196": {
+         "plaintext": "Improves Viktor\'s Power Transfer and increases Health",
+         "name": "Augment: Power"
+      },
+      "1052": {
+         "plaintext": "Slightly increases Ability Power",
+         "name": "Amplifying Tome",
+         "into": [
+            "3290",
+            "3145",
+            "3041",
+            "3108",
+            "3057",
+            "3136",
+            "3135",
+            "3116",
+            "3151",
+            "3023",
+            "3191",
+            "3090",
+            "3092",
+            "3165"
+         ]
+      },
+      "1053": {
+         "plaintext": "Basic attacks restore Health",
+         "name": "Vampiric Scepter",
+         "into": [
+            "3050",
+            "3144",
+            "3181",
+            "3072",
+            "3074",
+            "3159"
+         ]
+      },
+      "3191": {
+         "plaintext": "Increases Armor and Ability Power",
+         "name": "Seeker\'s Armguard",
+         "into": [
+            "3090",
+            "3157",
+            "3170"
+         ]
+      },
+      "3050": {
+         "plaintext": "Grants nearby allies Life Steal and Attack Damage",
+         "name": "Zeke\'s Herald"
+      },
+      "3190": {
+         "plaintext": "Activate to shield nearby allies from damage",
+         "name": "Locket of the Iron Solari"
+      },
+      "3056": {
+         "plaintext": "Temporarily disables enemy turrets",
+         "name": "Ohmwrecker"
+      },
+      "2047": {
+         "plaintext": "Allows champion to see invisible units",
+         "name": "Oracle\'s Extract"
+      },
+      "3057": {
+         "plaintext": "Grants a bonus to next attack after spell cast",
+         "name": "Sheen",
+         "into": [
+            "3078",
+            "3100",
+            "3025"
+         ]
+      },
+      "2049": {
+         "plaintext": "Increases Health and provides Sight Wards over time",
+         "name": "Sightstone",
+         "into": ["2045"]
+      },
+      "2048": {
+         "plaintext": "Temporarily increases Ability Power, Cooldown Reduction, Mana and Energy Regeneration",
+         "name": "Ichor of Illumination"
+      },
+      "3301": {
+         "plaintext": "Grants gold when nearby minions die that you didn\'t kill",
+         "name": "Ancient Coin",
+         "into": ["3096"],
+         "group": "GoldBase"
+      },
+      "3303": {
+         "plaintext": "Grants gold when you attack enemies",
+         "name": "Spellthief\'s Edge",
+         "into": ["3098"],
+         "group": "GoldBase"
+      },
+      "3302": {
+         "plaintext": "Kill minions periodically to heal and grant gold to a nearby ally",
+         "name": "Relic Shield",
+         "into": ["3097"],
+         "group": "GoldBase"
+      },
+      "1037": {
+         "plaintext": "Moderately increases Attack Damage",
+         "name": "Pickaxe",
+         "into": [
+            "3035",
+            "3124",
+            "3031",
+            "3156",
+            "3077",
+            "3104",
+            "3184",
+            "3022",
+            "3172",
+            "3181"
+         ]
+      },
+      "1036": {
+         "plaintext": "Slightly increases Attack Damage",
+         "name": "Long Sword",
+         "into": [
+            "1053",
+            "3044",
+            "3144",
+            "3134",
+            "3209",
+            "3035",
+            "3155",
+            "3004",
+            "3077",
+            "3123",
+            "3141",
+            "3122",
+            "3008"
+         ]
+      },
+      "1039": {
+         "plaintext": "Slightly increases damage dealt to neutral monsters",
+         "name": "Hunter\'s Machete",
+         "into": [
+            "3106",
+            "1080"
+         ]
+      },
+      "1038": {
+         "plaintext": "Greatly increases Attack Damage",
+         "name": "B. F. Sword",
+         "into": [
+            "3031",
+            "3072",
+            "3139"
+         ]
+      },
+      "3187": {
+         "plaintext": "Activate to reveal a nearby area of the map",
+         "name": "Hextech Sweeper"
+      },
+      "3188": {
+         "plaintext": "Activate to increase all magic damage dealt to an enemy champion",
+         "name": "Blackfire Torch"
+      },
+      "1042": {
+         "plaintext": "Slightly increases Attack Speed",
+         "name": "Dagger",
+         "into": [
+            "3006",
+            "3086",
+            "3101",
+            "3046",
+            "3131",
+            "3154",
+            "3085",
+            "3091",
+            "3153"
+         ]
+      },
+      "1043": {
+         "plaintext": "Greatly increases Attack Speed",
+         "name": "Recurve Bow",
+         "into": [
+            "3091",
+            "3131",
+            "3085"
+         ]
+      },
+      "3184": {
+         "plaintext": "Attacks and kills give a small burst of speed, activate to slow enemies",
+         "name": "Entropy"
+      },
+      "3185": {
+         "plaintext": "Increases Attack Speed and grants vision of attacked enemies",
+         "name": "The Lightbringer"
+      },
+      "3040": {"name": "Seraph\'s Embrace"},
+      "3041": {
+         "plaintext": "Grants Ability Power for kills and assists",
+         "name": "Mejai\'s Soulstealer"
+      },
+      "3180": {
+         "plaintext": "Improves defense, activate for area magic damage",
+         "name": "Odyn\'s Veil"
+      },
+      "3042": {"name": "Muramana"},
+      "3181": {
+         "plaintext": "Greatly increases Attack Damage and Life Steal",
+         "name": "Sanguine Blade"
+      },
+      "3043": {"name": "Muramana"},
+      "3044": {
+         "plaintext": "Attacks and kills give a small burst of speed",
+         "name": "Phage",
+         "into": [
+            "3078",
+            "3184"
+         ]
+      },
+      "3046": {
+         "plaintext": "Champion attacks faster and can move through units",
+         "name": "Phantom Dancer"
+      },
+      "3069": {
+         "plaintext": "Increases Health and Cooldown Reduction, activate to speed up nearby allies",
+         "name": "Talisman of Ascension",
+         "group": "GoldBase"
+      },
+      "1029": {
+         "plaintext": "Slightly increases Armor",
+         "name": "Cloth Armor",
+         "into": [
+            "3047",
+            "3106",
+            "3082",
+            "3097",
+            "3159",
+            "3075",
+            "3191",
+            "3105"
+         ]
+      },
+      "1028": {
+         "plaintext": "Increases Health",
+         "name": "Ruby Crystal",
+         "into": [
+            "3067",
+            "3105",
+            "3044",
+            "3010",
+            "3136",
+            "3083",
+            "2049",
+            "2045",
+            "3084",
+            "3185",
+            "2051",
+            "3022",
+            "3056",
+            "3211",
+            "3071",
+            "3102",
+            "3401"
+         ]
+      },
+      "3169": {"name": "Bonetooth Necklace"},
+      "1027": {
+         "plaintext": "Increases Mana",
+         "name": "Sapphire Crystal",
+         "into": [
+            "3057",
+            "3070",
+            "3073",
+            "3010",
+            "3024"
+         ]
+      },
+      "3168": {"name": "Bonetooth Necklace"},
+      "1026": {
+         "plaintext": "Moderately increases Ability Power",
+         "name": "Blasting Wand",
+         "into": [
+            "3001",
+            "3135",
+            "3027",
+            "3029",
+            "3089",
+            "3100",
+            "3116",
+            "3124",
+            "3188",
+            "3090",
+            "3003",
+            "3007",
+            "3056",
+            "3060"
+         ]
+      },
+      "3070": {
+         "plaintext": "Increases maximum Mana as Mana is spent",
+         "name": "Tear of the Goddess",
+         "into": [
+            "3003",
+            "3004"
+         ]
+      },
+      "3071": {
+         "plaintext": "Dealing physical damage to enemy champions reduces their Armor",
+         "name": "The Black Cleaver"
+      },
+      "1033": {
+         "plaintext": "Slightly increases Magic Resist",
+         "name": "Null-Magic Mantle",
+         "into": [
+            "3111",
+            "3028",
+            "3105",
+            "3091",
+            "3155",
+            "3023",
+            "3290"
+         ]
+      },
+      "3174": {
+         "plaintext": "Restores maximum Mana on kill or assist",
+         "name": "Athene\'s Unholy Grail"
+      },
+      "3171": {"name": "Bonetooth Necklace"},
+      "1031": {
+         "plaintext": "Greatly increases Armor",
+         "name": "Chain Vest",
+         "into": [
+            "3026",
+            "3068",
+            "3024",
+            "3005",
+            "3075"
+         ]
+      },
+      "3172": {
+         "plaintext": "Improves offense and reduces duration of disabling effects",
+         "name": "Zephyr"
+      },
+      "3175": {"name": "Head of Kha\'Zix"},
+      "3078": {
+         "plaintext": "Tons of Damage",
+         "name": "Trinity Force"
+      },
+      "3077": {
+         "plaintext": "Melee attacks hit nearby enemies",
+         "name": "Tiamat (Melee Only)",
+         "into": ["3074"]
+      },
+      "3074": {
+         "plaintext": "Melee attacks hit nearby enemies, dealing damage and restoring Health",
+         "name": "Ravenous Hydra (Melee Only)"
+      },
+      "3075": {
+         "plaintext": "Returns damage taken from basic attacks as magic damage",
+         "name": "Thornmail"
+      },
+      "3170": {
+         "plaintext": "Improves defense and reduces duration of disabling effects",
+         "name": "Moonflair Spellblade"
+      },
+      "3072": {
+         "plaintext": "Grants massive Attack Damage and Life Steal",
+         "name": "The Bloodthirster"
+      },
+      "3073": {
+         "plaintext": "Increases maximum Mana as Mana is spent",
+         "name": "Tear of the Goddess (Crystal Scar)",
+         "into": [
+            "3007",
+            "3008"
+         ]
+      },
+      "2040": {
+         "plaintext": "Temporarily increases Attack Damage, Attack Speed, and increases damage to turrets",
+         "name": "Ichor of Rage"
+      },
+      "2041": {
+         "plaintext": "Restores Health and Mana over time, refills at shop",
+         "name": "Crystalline Flask"
+      },
+      "2044": {
+         "plaintext": "Use to temporarily provide vision in an area",
+         "name": "Stealth Ward",
+         "group": "GreenWards"
+      },
+      "2045": {
+         "plaintext": "Greatly increases Health and provides Sight Wards over time",
+         "name": "Ruby Sightstone"
+      },
+      "2043": {
+         "plaintext": "Use to temporarily provide vision and stealth detection in an area",
+         "name": "Vision Ward",
+         "group": "PinkWards"
+      },
+      "3158": {
+         "plaintext": "Increases Movement Speed and Cooldown Reduction",
+         "name": "Ionian Boots of Lucidity",
+         "into": [
+            "3279",
+            "3278",
+            "3277",
+            "3276",
+            "3275"
+         ]
+      },
+      "3157": {
+         "plaintext": "Activate to become invincible but unable to take actions",
+         "name": "Zhonya\'s Hourglass"
+      },
+      "1018": {
+         "plaintext": "Moderately increases Critical Strike Chance",
+         "name": "Cloak of Agility",
+         "into": [
+            "3046",
+            "3031",
+            "3104"
+         ]
+      },
+      "3159": {
+         "plaintext": "Activate to reveal a nearby area of the map",
+         "name": "Grez\'s Spectral Lantern",
+         "into": ["3185"]
+      },
+      "3060": {
+         "plaintext": "Promotes a siege minion to a more powerful unit",
+         "name": "Banner of Command"
+      },
+      "3165": {
+         "plaintext": "Greatly increases Ability Power and Cooldown Reduction",
+         "name": "Morellonomicon"
+      },
+      "3166": {
+         "plaintext": "Grants Rengar bonus effects on kill or assist",
+         "name": "Bonetooth Necklace"
+      },
+      "3167": {"name": "Bonetooth Necklace"},
+      "3065": {
+         "plaintext": "Increases Health and healing effects",
+         "name": "Spirit Visage"
+      },
+      "2037": {
+         "plaintext": "Temporarily increases Attack Damage and Health",
+         "name": "Elixir of Fortitude"
+      },
+      "3067": {
+         "plaintext": "Increases Health and Cooldown Reduction",
+         "name": "Kindlegem",
+         "into": [
+            "3065",
+            "3187",
+            "3050",
+            "3069",
+            "3207"
+         ]
+      },
+      "3068": {
+         "plaintext": "Constantly deals damage to nearby enemies",
+         "name": "Sunfire Cape"
+      },
+      "2039": {
+         "plaintext": "Temporarily increases Ability Power and Cooldown Reduction",
+         "name": "Elixir of Brilliance"
+      }
+   },
+   "type": "item",
    "version": "4.2.6"
 }
 '.freeze

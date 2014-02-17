@@ -36,7 +36,7 @@ module Protocol
   end
   
   class SummonerRankedInfo
-    def self.create_request(region = "", summoner_id = "", season)
+    def self.create_request(region = "", summoner_id = "", season = "")
       URI("#{URI_DOMAIN}#{region.downcase}/v1.2/stats/by-summoner/#{summoner_id}/ranked?season=#{season.upcase}&api_key=#{API_KEY}")
     end
   end

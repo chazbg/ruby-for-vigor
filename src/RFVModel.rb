@@ -172,18 +172,20 @@ module Model
         @max_champions_killed = champion_json["stats"]["maxChampionsKilled"] || 0
         @minions_killed = champion_json["stats"]["totalMinionKills"] || 0
         @total_games = champion_json["stats"]["totalSessionsPlayed"] || 0
-        @average_kills = @total_games > 0 ? @kills.to_f / @total_games : 0
-        @average_deaths = @total_games > 0 ? @deaths.to_f / @total_games : 0
-        @average_assists = @total_games > 0 ? @assists.to_f / @total_games : 0
-        @average_minions = @total_games > 0 ? @minions_killed.to_f / @total_games : 0
-        @first_blood_probability = @total_games > 0 ? @first_bloods.to_f / @total_games : 0
+        @average_kills = @total_games > 0 ? @kills.to_f / @total_games : 0.0
+        @average_deaths = @total_games > 0 ? @deaths.to_f / @total_games : 0.0
+        @average_assists = @total_games > 0 ? @assists.to_f / @total_games : 0.0
+        @average_minions = @total_games > 0 ? @minions_killed.to_f / @total_games : 0.0
+        @first_blood_probability = @total_games > 0 ? @first_bloods.to_f / @total_games : 0.0
       end
     end
     
-    def initialize(ranked_stats_json)
-      @champions = ranked_stats_json["champions"].map do |champion_json| 
+    def initialize(ranked_stats_json = {})
+      ranked_stats_json ||= {}
+      
+      @champions = (ranked_stats_json["champions"] || []).map do |champion_json| 
         RankedChampion.new(champion_json) 
-      end
+      end 
     end
   end
   
