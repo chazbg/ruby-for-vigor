@@ -186,4 +186,15 @@ module Model
       end
     end
   end
+  
+  class SummonerSpell
+    attr_reader :name, :modes
+    
+    def initialize(summoner_spell_json = {})
+      summoner_spell_json ||= {}
+
+      @name = summoner_spell_json["name"] || ""
+      @modes = summoner_spell_json["modes"] || []
+    end
+  end
 end

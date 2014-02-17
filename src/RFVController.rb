@@ -40,7 +40,7 @@ module Controller
     include Model
     include Protocol
     
-    attr_reader :champions, :items
+    attr_reader :champions, :items, :summoner_spells
     
     def initialize(transport)
       @transport = transport
@@ -51,6 +51,8 @@ module Controller
         @champions = champions_response[:json]["champions"].map do |champion_json|
           Champion.new(champion_json)
         end
+      else
+        puts "Server error"
       end
       
       items_response = @transport.send_request(Items.create_request("NA"))
@@ -59,6 +61,18 @@ module Controller
         @items = items_response[:json]["data"].map do |item_json|
           Item.new(item_json)
         end
+      else
+        puts "Server error"
+      end
+      
+      summoner_spells_response = @transport.send_request(SummonerSpells.create_request("NA"))
+      
+      if :success == summoner_spells_response[:status]
+        @summoner_spells = summoner_spells_response[:json]["data"].map do |summoner_spell_json|
+          SummonerSpell.new(summoner_spell_json[1])
+        end
+      else
+        puts "Server error"
       end
     end
     
@@ -136,6 +150,33 @@ module Controller
       else
         nil
       end
+    end
+    
+    def ultimate_bravery_build
+      champion = @champions[rand(0...@champions.size)].name
+      summoner_spells_pool = @summoner_spells.select { |spell| spell.modes.include?("CLASSIC") }
+      summoner_spells_pool.map! { |spell| spell.name }
+
+      summoner_spell1 = summoner_spells_pool[rand(0...summoner_spells_pool.size)]
+      summoner_spells_pool.delete summoner_spell1
+      summoner_spell2 = summoner_spells_pool[rand(0...summoner_spells_pool.size)]
+      
+      items_pool = @items.select { |item| item.top_tier }
+      items_pool.map! { |item| item.name }
+      
+      item_build = []
+      (0...6).each do |i|
+        item = items_pool[rand(0...items_pool.size)]
+        items_pool.delete item
+        item_build << item
+      end
+      
+      { 
+        champion: champion,
+        summoner_spell1: summoner_spell1,
+        summoner_spell2: summoner_spell2,
+        item_build: item_build
+      }
     end
   end
   
@@ -277,7 +318,9 @@ module Controller
     
     def ultimate_bravery_menu_transition(input)
       @process = :process_ultimate_bravery_menu_input
-      @context_stack.push(Context.new(UltimateBraveryMenu.new, @process))
+      menu = UltimateBraveryMenu.new
+      menu.display_build(@service.ultimate_bravery_build)
+      @context_stack.push(Context.new(menu, @process))
       @context_stack.top.menu.display_menu
     end
     

@@ -2720,3 +2720,158 @@ RANKED_STATS = '
    "summonerId": 20548044
 }
 '.freeze
+
+SUMMONER_SPELLS = '
+{
+   "data": {
+      "SummonerBoost": {
+         "id": "SummonerBoost",
+         "description": "Removes all disables and summoner spell debuffs affecting your champion and lowers the duration of incoming disables by 65% for 3 seconds.",
+         "name": "Cleanse",
+         "modes": [
+            "CLASSIC",
+            "ODIN",
+            "TUTORIAL",
+            "ARAM"
+         ],
+         "summonerLevel": 2
+      },
+      "SummonerTeleport": {
+         "id": "SummonerTeleport",
+         "description": "After casting for 4 seconds, teleports your champion to target allied minion, turret, or ward.",
+         "name": "Teleport",
+         "modes": [
+            "CLASSIC",
+            "TUTORIAL"
+         ],
+         "summonerLevel": 2
+      },
+      "SummonerDot": {
+         "id": "SummonerDot",
+         "description": "Ignites target enemy champion, dealing 70-410 true damage (depending on champion level) over 5 seconds and reduces healing effects on the target for the duration.",
+         "name": "Ignite",
+         "modes": [
+            "CLASSIC",
+            "ODIN",
+            "TUTORIAL",
+            "ARAM"
+         ],
+         "summonerLevel": 8
+      },
+      "SummonerHaste": {
+         "id": "SummonerHaste",
+         "description": "Your champion can move through units and has 27% increased Movement Speed for 10 seconds",
+         "name": "Ghost",
+         "modes": [
+            "CLASSIC",
+            "ODIN",
+            "TUTORIAL",
+            "ARAM"
+         ],
+         "summonerLevel": 1
+      },
+      "SummonerHeal": {
+         "id": "SummonerHeal",
+         "description": "Restores 90-345 Health (depending on champion level) to your champion and to nearby allies.",
+         "name": "Heal",
+         "modes": [
+            "CLASSIC",
+            "ODIN",
+            "TUTORIAL",
+            "ARAM"
+         ],
+         "summonerLevel": 1
+      },
+      "SummonerRevive": {
+         "id": "SummonerRevive",
+         "description": "Instantly revives your champion at your team\'s Summoner Platform and increases their Movement Speed for a short duration.",
+         "name": "Revive",
+         "modes": [
+            "CLASSIC",
+            "TUTORIAL",
+            "ODIN"
+         ],
+         "summonerLevel": 1
+      },
+      "SummonerExhaust": {
+         "id": "SummonerExhaust",
+         "description": "Exhausts target enemy champion, reducing their Movement Speed and damage dealt by 30% for 2.5 seconds and reduces their Attack Speed by 50% for the duration.",
+         "name": "Exhaust",
+         "modes": [
+            "CLASSIC",
+            "ODIN",
+            "TUTORIAL",
+            "ARAM"
+         ],
+         "summonerLevel": 8
+      },
+      "SummonerSmite": {
+         "id": "SummonerSmite",
+         "description": "Deals 390-1000 true damage (depending on champion level) to target monster or enemy minion.",
+         "name": "Smite",
+         "modes": [
+            "CLASSIC",
+            "TUTORIAL",
+            "ODIN"
+         ],
+         "summonerLevel": 3
+      },
+      "SummonerMana": {
+         "id": "SummonerMana",
+         "description": "Restores 40% of your champion\'s maximum Mana. Also restores allies for 40% of their maximum Mana",
+         "name": "Clarity",
+         "modes": [
+            "CLASSIC",
+            "ODIN",
+            "TUTORIAL",
+            "ARAM"
+         ],
+         "summonerLevel": 1
+      },
+      "SummonerBarrier": {
+         "id": "SummonerBarrier",
+         "description": "Shields your champion for 115-455 (depending on champion level) for 2 seconds.",
+         "name": "Barrier",
+         "modes": [
+            "ARAM",
+            "CLASSIC",
+            "TUTORIAL",
+            "ODIN"
+         ],
+         "summonerLevel": 6
+      },
+      "SummonerClairvoyance": {
+         "id": "SummonerClairvoyance",
+         "description": "Reveals a small area of the map for your team for 5 seconds.",
+         "name": "Clairvoyance",
+         "modes": [
+            "CLASSIC",
+            "ODIN",
+            "TUTORIAL"
+         ],
+         "summonerLevel": 10
+      },
+      "SummonerFlash": {
+         "id": "SummonerFlash",
+         "description": "Teleports your champion a short distance toward your cursor\'s location.",
+         "name": "Flash",
+         "modes": [
+            "CLASSIC",
+            "ODIN",
+            "TUTORIAL",
+            "ARAM"
+         ],
+         "summonerLevel": 12
+      },
+      "SummonerOdinGarrison": {
+         "id": "SummonerOdinGarrison",
+         "description": "Allied Turret: Grants massive regeneration for 8 seconds. Enemy Turret: Reduces damage dealt by 80% for 8 seconds.",
+         "name": "Garrison",
+         "modes": ["ODIN"],
+         "summonerLevel": 1
+      }
+   },
+   "type": "summoner",
+   "version": "4.2.6"
+}
+'.freeze

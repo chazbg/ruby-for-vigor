@@ -164,7 +164,28 @@ module UserInterface
   
   class RankingMenu < BasicMenu
     def display_ranking_stats(stats)
-      @data = stats
+      @data = [
+        "Season 4 Ranked Stats: ",
+        stats.champions.map do |champion|
+          [
+            "-----------------------",
+            "#{champion.name}",
+            "Total games: #{champion.total_games}",
+            "Total kills: #{champion.kills}",
+            "Average kills: %0.1f" % [champion.average_kills],
+            "Total deaths: #{champion.deaths}",
+            "Average deaths: %0.1f" % [champion.average_deaths],
+            "Total assists: #{champion.assists}",
+            "Average assists: %0.1f" % [champion.average_assists],
+            "Total minions killed: #{champion.minions_killed}",
+            "Average minions per game: %0.1f" % [champion.average_minions],
+            "Total first bloods: #{champion.first_bloods}",
+            "First blood probability: %0.1f" % [champion.first_blood_probability],
+            "Most kills in a game: #{champion.max_champions_killed}",
+            "-----------------------"
+          ]          
+        end
+      ]
     end
   end
   
@@ -175,5 +196,15 @@ module UserInterface
   end
   
   class UltimateBraveryMenu < BasicMenu
+    def display_build(build)
+      @data = [
+        "Ultimate Bravery challenges you to play with a randomly selected build.",
+        "Here is the build this time: ",
+        "Champion: #{build[:champion]}",
+        "Summoner spell 1: #{build[:summoner_spell1]}",
+        "Summoner spell 2: #{build[:summoner_spell2]}",
+        "Item build: #{build[:item_build].join(', ')}"
+      ]
+    end
   end
 end

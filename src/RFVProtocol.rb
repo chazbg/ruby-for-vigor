@@ -73,8 +73,14 @@ module Protocol
     end
   end
   
+  class SummonerSpells
+    def self.create_request(region = "")
+      URI("#{URI_DOMAIN}static-data/#{region.downcase}/v1/summoner-spell?spellData=modes&api_key=#{API_KEY}")
+    end
+  end
+  
   private
 
   URI_DOMAIN = "http://prod.api.pvp.net/api/lol/".freeze
-  API_KEY = "3cc8e32a-8370-46eb-89c6-be4ebaf0bbe4".freeze
+  API_KEY = "9c3701eb-dea2-4906-b070-880ff89ff44b".freeze
 end
