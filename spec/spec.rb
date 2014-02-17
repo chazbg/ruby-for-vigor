@@ -24,33 +24,6 @@ module Protocol
   end
 end
 
-describe "Something" do
-  context "Mock Riot Server" do
-    
-
-    it "Returns valid data for all requests" do
-      [
-        Protocol::Champions,
-        Protocol::GamesInfo,
-        Protocol::LeagueInfoChallenger,
-        Protocol::LeagueInfoEntry,
-        Protocol::LeagueInfo,
-        Protocol::SummonerSummary,
-        Protocol::SummonerRankedInfo,
-        Protocol::SummonersByIds,
-        Protocol::SummonerMasteries,
-        Protocol::SummonerRunes,
-        Protocol::SummonerByName,
-        Protocol::Items,
-        Protocol::SummonerSpells,
-      ].each do |c|
-        # puts "\n" + c.to_s
-        # p @http.get(c.create_request.path)
-      end
-    end
-  end
-end
-
 module Model
   describe "Model" do
     it "Extracts Summoner values from JSON correctly" do
