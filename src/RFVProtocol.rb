@@ -75,7 +75,7 @@ module Protocol
   
   class SummonerSpells
     def self.create_request(region = "")
-      URI("#{URI_DOMAIN}static-data/#{region.downcase}/v1/summoner-spell?spellData=modes&api_key=#{API_KEY}")
+      URI("#{URI_DOMAIN}static-data/#{region.downcase}/v1/summoner-spell?spellData=all&api_key=#{API_KEY}")
     end
   end
   

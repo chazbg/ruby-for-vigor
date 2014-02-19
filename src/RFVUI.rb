@@ -182,6 +182,7 @@ module UserInterface
             "Total first bloods: #{champion.first_bloods}",
             "First blood probability: %0.1f" % [champion.first_blood_probability],
             "Most kills in a game: #{champion.max_champions_killed}",
+            "Win ratio: %0.1f %" %[champion.win_ratio * 100],
             "-----------------------"
           ]          
         end
@@ -195,10 +196,14 @@ module UserInterface
       suggestions.each do |s|
         @data << "Similar champion to #{s[:original].name} is #{s[:similar].name}"
       end
+      @data << "-------------------"
     end
   end
   
   class GeneralAdviceMenu < BasicMenu
+    def display_general_advice(checklist)
+      @data = checklist
+    end
   end
   
   class UltimateBraveryMenu < BasicMenu

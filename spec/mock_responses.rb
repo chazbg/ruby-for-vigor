@@ -5957,7 +5957,30 @@ SUMMONER_SPELLS = '
 {
    "data": {
       "SummonerBoost": {
+         "range": "self",
+         "resource": "No Cost",
+         "maxrank": 1,
+         "image": {
+            "w": 48,
+            "full": "SummonerBoost.png",
+            "sprite": "spell0.png",
+            "group": "spell",
+            "h": 48,
+            "y": 0,
+            "x": 96
+         },
+         "cost": [0],
+         "cooldown": [0],
+         "summonerLevel": 2,
          "id": "SummonerBoost",
+         "vars": [{
+            "link": "@text",
+            "coeff": 3,
+            "key": "f1"
+         }],
+         "rangeBurn": "self",
+         "costType": "NoCost",
+         "cooldownBurn": "0",
          "description": "Removes all disables and summoner spell debuffs affecting your champion and lowers the duration of incoming disables by 65% for 3 seconds.",
          "name": "Cleanse",
          "modes": [
@@ -5966,20 +5989,99 @@ SUMMONER_SPELLS = '
             "TUTORIAL",
             "ARAM"
          ],
-         "summonerLevel": 2
+         "key": "1",
+         "costBurn": "0",
+         "tooltip": "Removes all disables and summoner spell debuffs affecting your champion and reduces the duration of disables by 65% for the next {{ f1 }} seconds."
       },
       "SummonerTeleport": {
+         "range": [25000],
+         "resource": "No Cost",
+         "maxrank": 1,
+         "image": {
+            "w": 48,
+            "full": "SummonerTeleport.png",
+            "sprite": "spell0.png",
+            "group": "spell",
+            "h": 48,
+            "y": 48,
+            "x": 288
+         },
+         "cost": [0],
+         "cooldown": [300],
+         "summonerLevel": 2,
          "id": "SummonerTeleport",
+         "vars": [{
+            "link": "@text",
+            "coeff": 4,
+            "key": "f1"
+         }],
+         "rangeBurn": "25000",
+         "costType": "NoCost",
+         "cooldownBurn": "300",
          "description": "After casting for 4 seconds, teleports your champion to target allied minion, turret, or ward.",
          "name": "Teleport",
          "modes": [
             "CLASSIC",
             "TUTORIAL"
          ],
-         "summonerLevel": 2
+         "key": "12",
+         "costBurn": "0",
+         "tooltip": "After casting for {{ f1 }} seconds, your champion teleports to target allied minion, turret, or ward.<br><br>Cast again to cancel, putting Teleport on a reduced {{ f3 }} second cooldown."
       },
       "SummonerDot": {
+         "range": [600],
+         "resource": "No Cost",
+         "maxrank": 1,
+         "effectBurn": [
+            null,
+            "500",
+            "150"
+         ],
+         "image": {
+            "w": 48,
+            "full": "SummonerDot.png",
+            "sprite": "spell0.png",
+            "group": "spell",
+            "h": 48,
+            "y": 0,
+            "x": 192
+         },
+         "cost": [0],
+         "cooldown": [180],
+         "summonerLevel": 8,
          "id": "SummonerDot",
+         "vars": [{
+            "link": "@player.level",
+            "coeff": [
+               70,
+               90,
+               110,
+               130,
+               150,
+               170,
+               190,
+               210,
+               230,
+               250,
+               270,
+               290,
+               310,
+               330,
+               350,
+               370,
+               390,
+               410
+            ],
+            "key": "f1"
+         }],
+         "rangeBurn": "600",
+         "costType": "NoCost",
+         "cooldownBurn": "180",
+         "effect": [
+            null,
+            [500],
+            [150]
+         ],
          "description": "Ignites target enemy champion, dealing 70-410 true damage (depending on champion level) over 5 seconds and reduces healing effects on the target for the duration.",
          "name": "Ignite",
          "modes": [
@@ -5988,10 +6090,35 @@ SUMMONER_SPELLS = '
             "TUTORIAL",
             "ARAM"
          ],
-         "summonerLevel": 8
+         "key": "14",
+         "costBurn": "0",
+         "tooltip": "Ignite deals <span class=\"colorFEFCFF\">{{ f1 }}<\/span> true damage to target enemy champion over 5 seconds and reduces healing effects by 50% for the duration."
       },
       "SummonerHaste": {
+         "range": "self",
+         "resource": "No Cost",
+         "maxrank": 1,
+         "image": {
+            "w": 48,
+            "full": "SummonerHaste.png",
+            "sprite": "spell0.png",
+            "group": "spell",
+            "h": 48,
+            "y": 0,
+            "x": 384
+         },
+         "cost": [0],
+         "cooldown": [0],
+         "summonerLevel": 1,
          "id": "SummonerHaste",
+         "vars": [{
+            "link": "@text",
+            "coeff": 27,
+            "key": "f1"
+         }],
+         "rangeBurn": "self",
+         "costType": "NoCost",
+         "cooldownBurn": "0",
          "description": "Your champion can move through units and has 27% increased Movement Speed for 10 seconds",
          "name": "Ghost",
          "modes": [
@@ -6000,10 +6127,54 @@ SUMMONER_SPELLS = '
             "TUTORIAL",
             "ARAM"
          ],
-         "summonerLevel": 1
+         "key": "6",
+         "costBurn": "0",
+         "tooltip": "Your champion can move through units and has {{ f1 }}% increased Movement Speed for 10 seconds."
       },
       "SummonerHeal": {
+         "range": [600],
+         "resource": "No Cost",
+         "maxrank": 1,
+         "image": {
+            "w": 48,
+            "full": "SummonerHeal.png",
+            "sprite": "spell0.png",
+            "group": "spell",
+            "h": 48,
+            "y": 0,
+            "x": 432
+         },
+         "cost": [0],
+         "cooldown": [300],
+         "summonerLevel": 1,
          "id": "SummonerHeal",
+         "vars": [{
+            "link": "@player.level",
+            "coeff": [
+               145,
+               170,
+               195,
+               220,
+               245,
+               270,
+               295,
+               320,
+               345,
+               370,
+               395,
+               420,
+               445,
+               470,
+               495,
+               520,
+               545,
+               570
+            ],
+            "key": "f1"
+         }],
+         "rangeBurn": "600",
+         "costType": "NoCost",
+         "cooldownBurn": "300",
          "description": "Restores 90-345 Health (depending on champion level) to your champion and to nearby allies.",
          "name": "Heal",
          "modes": [
@@ -6012,10 +6183,30 @@ SUMMONER_SPELLS = '
             "TUTORIAL",
             "ARAM"
          ],
-         "summonerLevel": 1
+         "key": "7",
+         "costBurn": "0",
+         "tooltip": "Restores {{ f1 }} Health to your champion and nearby allies."
       },
       "SummonerRevive": {
+         "range": "self",
+         "resource": "No Cost",
+         "maxrank": 1,
+         "image": {
+            "w": 48,
+            "full": "SummonerRevive.png",
+            "sprite": "spell0.png",
+            "group": "spell",
+            "h": 48,
+            "y": 48,
+            "x": 192
+         },
+         "cost": [0],
+         "cooldown": [0],
+         "summonerLevel": 1,
          "id": "SummonerRevive",
+         "rangeBurn": "self",
+         "costType": "NoCost",
+         "cooldownBurn": "0",
          "description": "Instantly revives your champion at your team\'s Summoner Platform and increases their Movement Speed for a short duration.",
          "name": "Revive",
          "modes": [
@@ -6023,10 +6214,30 @@ SUMMONER_SPELLS = '
             "TUTORIAL",
             "ODIN"
          ],
-         "summonerLevel": 1
+         "key": "10",
+         "costBurn": "0",
+         "tooltip": "Instantly revives your champion at your team\'s Summoner Platform and grants +{{ f3 }}% Movement Speed that decays over 12 seconds."
       },
       "SummonerExhaust": {
+         "range": [550],
+         "resource": "No Cost",
+         "maxrank": 1,
+         "image": {
+            "w": 48,
+            "full": "SummonerExhaust.png",
+            "sprite": "spell0.png",
+            "group": "spell",
+            "h": 48,
+            "y": 0,
+            "x": 240
+         },
+         "cost": [0],
+         "cooldown": [210],
+         "summonerLevel": 8,
          "id": "SummonerExhaust",
+         "rangeBurn": "550",
+         "costType": "NoCost",
+         "cooldownBurn": "210",
          "description": "Exhausts target enemy champion, reducing their Movement Speed and damage dealt by 30% for 2.5 seconds and reduces their Attack Speed by 50% for the duration.",
          "name": "Exhaust",
          "modes": [
@@ -6035,10 +6246,54 @@ SUMMONER_SPELLS = '
             "TUTORIAL",
             "ARAM"
          ],
-         "summonerLevel": 8
+         "key": "3",
+         "costBurn": "0",
+         "tooltip": "Exhausts target enemy champion, reducing their Movement Speed and Damage dealt by {{ f2 }}% for 2.5 seconds and reducing their Attack Speed by {{ f3 }}% for the duration."
       },
       "SummonerSmite": {
+         "range": [760],
+         "resource": "No Cost",
+         "maxrank": 1,
+         "image": {
+            "w": 48,
+            "full": "SummonerSmite.png",
+            "sprite": "spell0.png",
+            "group": "spell",
+            "h": 48,
+            "y": 48,
+            "x": 240
+         },
+         "cost": [0],
+         "cooldown": [0],
+         "summonerLevel": 3,
          "id": "SummonerSmite",
+         "vars": [{
+            "link": "@player.level",
+            "coeff": [
+               445,
+               470,
+               495,
+               520,
+               545,
+               570,
+               595,
+               620,
+               645,
+               670,
+               695,
+               720,
+               745,
+               770,
+               795,
+               820,
+               845,
+               870
+            ],
+            "key": "f1"
+         }],
+         "rangeBurn": "760",
+         "costType": "NoCost",
+         "cooldownBurn": "0",
          "description": "Deals 390-1000 true damage (depending on champion level) to target monster or enemy minion.",
          "name": "Smite",
          "modes": [
@@ -6046,10 +6301,54 @@ SUMMONER_SPELLS = '
             "TUTORIAL",
             "ODIN"
          ],
-         "summonerLevel": 3
+         "key": "11",
+         "costBurn": "0",
+         "tooltip": "Deals <span class=\"colorFEFCFF\">{{ f1 }}<\/span> true damage to target enemy minion or pet."
       },
       "SummonerMana": {
+         "range": [600],
+         "resource": "No Cost",
+         "maxrank": 1,
+         "image": {
+            "w": 48,
+            "full": "SummonerMana.png",
+            "sprite": "spell0.png",
+            "group": "spell",
+            "h": 48,
+            "y": 48,
+            "x": 0
+         },
+         "cost": [0],
+         "cooldown": [180],
+         "summonerLevel": 1,
          "id": "SummonerMana",
+         "vars": [{
+            "link": "@player.level",
+            "coeff": [
+               190,
+               220,
+               250,
+               280,
+               310,
+               340,
+               370,
+               400,
+               430,
+               460,
+               490,
+               520,
+               550,
+               580,
+               610,
+               640,
+               670,
+               700
+            ],
+            "key": "f1"
+         }],
+         "rangeBurn": "600",
+         "costType": "NoCost",
+         "cooldownBurn": "180",
          "description": "Restores 40% of your champion\'s maximum Mana. Also restores allies for 40% of their maximum Mana",
          "name": "Clarity",
          "modes": [
@@ -6058,10 +6357,35 @@ SUMMONER_SPELLS = '
             "TUTORIAL",
             "ARAM"
          ],
-         "summonerLevel": 1
+         "key": "13",
+         "costBurn": "0",
+         "tooltip": "Restores {{ f1 }}% maximum Mana to your Champion and nearby allies."
       },
       "SummonerBarrier": {
+         "range": "self",
+         "resource": "No Cost",
+         "maxrank": 1,
+         "image": {
+            "w": 48,
+            "full": "SummonerBarrier.png",
+            "sprite": "spell0.png",
+            "group": "spell",
+            "h": 48,
+            "y": 0,
+            "x": 0
+         },
+         "cost": [0],
+         "cooldown": [0],
+         "summonerLevel": 6,
          "id": "SummonerBarrier",
+         "vars": [{
+            "link": "@cooldownsummoner",
+            "coeff": 125,
+            "key": "f1"
+         }],
+         "rangeBurn": "self",
+         "costType": "NoCost",
+         "cooldownBurn": "0",
          "description": "Shields your champion for 115-455 (depending on champion level) for 2 seconds.",
          "name": "Barrier",
          "modes": [
@@ -6070,10 +6394,35 @@ SUMMONER_SPELLS = '
             "TUTORIAL",
             "ODIN"
          ],
-         "summonerLevel": 6
+         "key": "21",
+         "costBurn": "0",
+         "tooltip": "Temporarily shields {{ f1 }} damage from your champion for 2 seconds."
       },
       "SummonerClairvoyance": {
+         "range": [25000],
+         "resource": "No Cost",
+         "maxrank": 1,
+         "image": {
+            "w": 48,
+            "full": "SummonerClairvoyance.png",
+            "sprite": "spell0.png",
+            "group": "spell",
+            "h": 48,
+            "y": 0,
+            "x": 144
+         },
+         "cost": [0],
+         "cooldown": [0],
+         "summonerLevel": 10,
          "id": "SummonerClairvoyance",
+         "vars": [{
+            "link": "@text",
+            "coeff": 4,
+            "key": "f1"
+         }],
+         "rangeBurn": "25000",
+         "costType": "NoCost",
+         "cooldownBurn": "0",
          "description": "Reveals a small area of the map for your team for 5 seconds.",
          "name": "Clairvoyance",
          "modes": [
@@ -6081,10 +6430,30 @@ SUMMONER_SPELLS = '
             "ODIN",
             "TUTORIAL"
          ],
-         "summonerLevel": 10
+         "key": "2",
+         "costBurn": "0",
+         "tooltip": "Reveals a small area of the map for your team for {{ f1 }} seconds."
       },
       "SummonerFlash": {
+         "range": [425],
+         "resource": "No Cost",
+         "maxrank": 1,
+         "image": {
+            "w": 48,
+            "full": "SummonerFlash.png",
+            "sprite": "spell0.png",
+            "group": "spell",
+            "h": 48,
+            "y": 0,
+            "x": 288
+         },
+         "cost": [0],
+         "cooldown": [0],
+         "summonerLevel": 12,
          "id": "SummonerFlash",
+         "rangeBurn": "425",
+         "costType": "NoCost",
+         "cooldownBurn": "0",
          "description": "Teleports your champion a short distance toward your cursor\'s location.",
          "name": "Flash",
          "modes": [
@@ -6093,14 +6462,36 @@ SUMMONER_SPELLS = '
             "TUTORIAL",
             "ARAM"
          ],
-         "summonerLevel": 12
+         "key": "4",
+         "costBurn": "0",
+         "tooltip": "Teleports your champion a short distance toward your cursor\'s location."
       },
       "SummonerOdinGarrison": {
+         "range": [1250],
+         "resource": "No Cost",
+         "maxrank": 1,
+         "image": {
+            "w": 48,
+            "full": "SummonerOdinGarrison.png",
+            "sprite": "spell0.png",
+            "group": "spell",
+            "h": 48,
+            "y": 48,
+            "x": 48
+         },
+         "cost": [0],
+         "cooldown": [210],
+         "summonerLevel": 1,
          "id": "SummonerOdinGarrison",
+         "rangeBurn": "1250",
+         "costType": "NoCost",
+         "cooldownBurn": "210",
          "description": "Allied Turret: Grants massive regeneration for 8 seconds. Enemy Turret: Reduces damage dealt by 80% for 8 seconds.",
          "name": "Garrison",
          "modes": ["ODIN"],
-         "summonerLevel": 1
+         "key": "17",
+         "costBurn": "0",
+         "tooltip": "<span class=\"size14 colorFF9900\">Allied Turret:<\/span> Grants massive regeneration for 8 seconds.<br><br><span class=\"size14 colorFF9900\">Enemy Turret:<\/span> Reduces damage dealt by 80% for 8 seconds."
       }
    },
    "type": "summoner",

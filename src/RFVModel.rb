@@ -186,7 +186,7 @@ module Model
     attr_reader :champions
     
     class RankedChampion
-      attr_reader :name, :id, :kills, :assists, :deaths, :first_bloods, :max_champions_killed, :minions_killed, :average_kills, :average_deaths, :average_assists, :average_minions, :first_blood_probability, :total_games
+      attr_reader :name, :id, :kills, :assists, :deaths, :first_bloods, :max_champions_killed, :minions_killed, :average_kills, :average_deaths, :average_assists, :average_minions, :first_blood_probability, :total_games, :games_won, :win_ratio
       
       def initialize(champion_json = {})
         champion_json ||= {}
@@ -200,11 +200,13 @@ module Model
         @max_champions_killed = champion_json["stats"]["maxChampionsKilled"] || 0
         @minions_killed = champion_json["stats"]["totalMinionKills"] || 0
         @total_games = champion_json["stats"]["totalSessionsPlayed"] || 0
+        @games_won = champion_json["stats"]["totalSessionsWon"] || 0
         @average_kills = @total_games > 0 ? @kills.to_f / @total_games : 0.0
         @average_deaths = @total_games > 0 ? @deaths.to_f / @total_games : 0.0
         @average_assists = @total_games > 0 ? @assists.to_f / @total_games : 0.0
         @average_minions = @total_games > 0 ? @minions_killed.to_f / @total_games : 0.0
         @first_blood_probability = @total_games > 0 ? @first_bloods.to_f / @total_games : 0.0
+        if @total_games == 0 then @win_ratio = 0 else @win_ratio = @games_won.to_f / @total_games end
       end
     end
     
@@ -218,13 +220,14 @@ module Model
   end
   
   class SummonerSpell
-    attr_reader :name, :modes
+    attr_reader :name, :modes, :key
     
     def initialize(summoner_spell_json = {})
       summoner_spell_json ||= {}
 
       @name = summoner_spell_json["name"] || ""
       @modes = summoner_spell_json["modes"] || []
+      @key = (summoner_spell_json["key"] || 0).to_i
     end
   end
 end

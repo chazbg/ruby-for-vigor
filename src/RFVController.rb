@@ -183,9 +183,14 @@ module Controller
       @champions.select { |champion| champion.key == champion_id }[0]
     end
     
+    def summoner_spell_by_id(summoner_spell_id)
+      @summoner_spells.select { |summoner_spell| p summoner_spell.key; summoner_spell.key == summoner_spell_id }[0]
+    end
+    
     def champion_max_stats
       max_stats = @champions[0].stats.raw.clone
 
+      #TODO: fill min and max arrays in one method
       @champions.each do |champion|
         champion.stats.raw.each do |key, value|
           max_stats[key] = [max_stats[key], value].max
@@ -392,10 +397,7 @@ module Controller
       end
 
       suggestions = @service.similar_champions(query_champions)
-      
-      # suggestions.each { |c|
-        # p "#{c[:original].name} => #{c[:similar].name}"
-      # }
+
       menu = ChampionSuggestionMenu.new
       menu.display_suggestions suggestions
       @process = :process_champion_suggestion_menu_input
@@ -404,8 +406,76 @@ module Controller
     end
     
     def general_advice_menu_transition(input)
+      summoner = @context_stack.top.args
+      matches = @service.request_recent_games(summoner.server, summoner.id)
+      
+      checklist = {
+        jungle_cs: :not_available,
+        average_cs: :not_ok,
+        average_wards: :not_ok,
+        average_deaths: :not_ok
+      }
+      
+      #jungler games
+      jungler_games = matches.select do |match| 
+        spell1 = @service.summoner_spell_by_id match.spell1
+        spell2 = @service.summoner_spell_by_id match.spell2
+        
+        spell1.name == "Smite" or spell2.name == "Smite"        
+      end
+      
+      jungler_games_cs = 0
+      jungler_games_minutes = 0
+      jungler_games.each do |game|
+        jungler_games_cs += game.stats.minions_killed + game.stats.neutral_minions_killed
+        jungler_games_minutes += game.stats.time_played / 60
+      end
+      
+      if jungler_games.size > 0
+        if jungler_games_cs < jungler_games_minutes * 5 
+          checklist[:jungle_cs] = :not_ok
+        else
+          checklist[:jungle_cs] = :ok
+        end
+      end
+      
+      #rest games
+      games_rest = matches - jungler_games
+      games_rest_cs = 0
+      games_rest_minutes = 0
+      games_rest.each do |game|
+        games_rest_cs += game.stats.minions_killed + game.stats.neutral_minions_killed
+        games_rest_minutes += game.stats.time_played / 60
+      end
+      
+      if games_rest_cs >= games_rest_minutes * 8 
+        checklist[:average_cs] = :ok
+      end
+        
+      #wards
+      wards_placed = 0
+      minutes_played = 0
+      deaths = 0
+      
+      matches.each do |game|
+        wards_placed += game.stats.ward_placed
+        minutes_played += game.stats.time_played / 60
+        deaths += game.stats.num_deaths
+      end
+      
+      if wards_placed >= minutes_played / 3
+        checklist[:average_wards] = :ok
+      end
+      
+      #deaths
+      if deaths / matches.size <= 5
+        checklist[:average_deaths] = :ok
+      end
+      
+      menu = GeneralAdviceMenu.new
+      menu.display_general_advice(checklist)
       @process = :process_general_advice_menu_input
-      @context_stack.push(Context.new(GeneralAdviceMenu.new, @process))
+      @context_stack.push(Context.new(menu, @process))
       @context_stack.top.menu.display_menu
     end
     
