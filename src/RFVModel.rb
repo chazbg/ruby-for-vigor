@@ -130,16 +130,43 @@ module Model
   end
   
   class Champion
-    attr_reader :id, :name, :defense_rank, :attack_rank, :magic_rank, :difficulty_rank
+    attr_reader :key, :name, :title, :stats
+    
+    class Stats
+      attr_reader :raw, :attack_range, :mp_per_level, :mp, :attack_damage, :hp, :hp_per_level, :attack_damage_per_level, :armor, :mp_regen_per_level, :hp_regen, :crit_per_level, :spellblock_per_level, :mp_regen, :attack_speed_per_level, :spellblock, :move_speed, :attack_speed_offset, :crit, :hp_regen_per_level, :armor_per_level
+      
+      def initialize(stats_json = {})
+        stats_json ||= {}
+        @raw = stats_json
+        @attack_range = (stats_json["attackrange"]  || 0).to_f
+        @mp_per_level = (stats_json["mpperlevel"]  || 0).to_f
+        @mp = (stats_json["mp"]  || 0).to_f
+        @attack_damage = (stats_json["attackdamage"]  || 0).to_f
+        @hp = (stats_json["hp"]  || 0).to_f
+        @hp_per_level = (stats_json["hpperlevel"]  || 0).to_f
+        @attack_damage_per_level = (stats_json["attackdamageperlevel"]  || 0).to_f
+        @armor = (stats_json["armor"]  || 0).to_f
+        @mp_regen_per_level = (stats_json["mpregenperlevel"]  || 0).to_f
+        @hp_regen = (stats_json["hpregen"]  || 0).to_f
+        @crit_per_level = (stats_json["critperlevel"]  || 0).to_f
+        @spellblock_per_level = (stats_json["spellblockperlevel"]  || 0).to_f
+        @mp_regen = (stats_json["mpregen"]  || 0).to_f
+        @attack_speed_per_level = (stats_json["attackspeedperlevel"]  || 0).to_f
+        @spellblock = (stats_json["spellblock"]  || 0).to_f
+        @move_speed = (stats_json["movespeed"]  || 0).to_f
+        @attack_speed_offset = (stats_json["attackspeedoffset"]  || 0).to_f
+        @crit = (stats_json["crit"]  || 0).to_f
+        @hp_regen_per_level = (stats_json["hp_regen_per_level"]  || 0).to_f
+        @armor_per_level = (stats_json["armorperlevel"]  || 0).to_f
+      end
+    end
     
     def initialize(champion_json = {})
       champion_json ||= {}
-      @id = champion_json["id"] || 0
-      @name = champion_json["name"]  || ""
-      @defense_rank = champion_json["defenseRank"] || 0
-      @attack_rank = champion_json["attackRank"] || 0
-      @magic_rank = champion_json["magicRank"] || 0
-      @difficulty_rank = champion_json["difficultyRank"] || 0
+      @key = (champion_json["key"] || 0).to_i
+      @title = champion_json["title"]  || ""
+      @name = champion_json["name"] || ""
+      @stats = Stats.new(champion_json["stats"])
     end
   end
   

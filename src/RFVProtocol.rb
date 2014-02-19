@@ -1,7 +1,7 @@
 module Protocol
   class Champions
     def self.create_request(region = "NA")
-      URI("#{URI_DOMAIN}#{region.downcase}/v1.1/champion?api_key=#{API_KEY}")
+      URI("#{URI_DOMAIN}static-data/#{region.downcase}/v1/champion?champData=stats&api_key=#{API_KEY}")
     end
   end
 

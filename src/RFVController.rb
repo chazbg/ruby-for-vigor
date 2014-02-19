@@ -48,8 +48,8 @@ module Controller
       champions_response = @transport.send_request(Champions.create_request("NA"))
 
       if :success == champions_response[:status]
-        @champions = champions_response[:json]["champions"].map do |champion_json|
-          Champion.new(champion_json)
+        @champions = champions_response[:json]["data"].map do |champion_json|
+          Champion.new(champion_json[1])
         end
       else
         puts "Server error"
@@ -96,7 +96,7 @@ module Controller
       response = @transport.send_request(request)
       detailed_info = {}
       
-      champion_name = @champions.select { |champion| player.champion_id == champion.id }[0].name
+      champion_name = @champions.select { |champion| player.champion_id == champion.key }[0].name
       if response[:status] == :success
         summoner_info = Summoner.new(response[:json][player.summoner_id.to_s])
         detailed_info = {
@@ -177,6 +177,80 @@ module Controller
         summoner_spell2: summoner_spell2,
         item_build: item_build
       }
+    end
+    
+    def champion_by_id(champion_id)
+      @champions.select { |champion| champion.key == champion_id }[0]
+    end
+    
+    def champion_max_stats
+      max_stats = @champions[0].stats.raw.clone
+
+      @champions.each do |champion|
+        champion.stats.raw.each do |key, value|
+          max_stats[key] = [max_stats[key], value].max
+        end
+      end
+      
+      max_stats
+    end
+    
+    def champion_min_stats
+      min_stats = @champions[0].stats.raw.clone
+
+      @champions.each do |champion|
+        champion.stats.raw.each do |key, value|
+          min_stats[key] = [min_stats[key], value].min
+        end
+      end
+      
+      min_stats
+    end
+    
+    def normalize(current_value, min_value, max_value)
+      if min_value == max_value 
+        1
+      else
+        (current_value.to_f - min_value) / (max_value - min_value)
+      end
+    end
+    
+    def closest_champion(query_champion, champion_pool)
+      max_values = champion_max_stats
+      min_values = champion_min_stats
+ 
+      closest_champion = { distance: 10000, champion: nil }
+      
+      champion_pool.each do |champion|
+        distance = 0
+        
+        champion.stats.raw.each do |key, observed_value|
+          if max_values[key] != 0.0 
+            expected_value = normalize(query_champion.stats.raw[key], min_values[key], max_values[key])
+            observed_value = normalize(observed_value, min_values[key], max_values[key])
+            if expected_value == 0 then expected_value = 0.1 end
+            distance += ((observed_value - expected_value).abs ** 2) / expected_value
+          end
+        end
+        
+        if distance < closest_champion[:distance]
+          closest_champion[:distance] = distance
+          closest_champion[:champion] = champion 
+        end
+      end
+      
+      p closest_champion[:distance]
+      closest_champion[:champion]
+    end
+    
+    def similar_champions(query_champions)
+      champions_pool = @champions - query_champions 
+      query_champions.map do |query_champion| 
+        {
+          original: query_champion,
+          similar: closest_champion(query_champion, champions_pool)
+        } 
+      end
     end
   end
   
@@ -305,6 +379,17 @@ module Controller
     end
     
     def champion_suggestion_menu_transition(input)
+      summoner = @context_stack.top.args
+
+      matches = @service.request_recent_games(summoner.server, summoner.id)
+      
+      recent_games_champions = matches.map { |match| match.champion_id }.uniq
+      recent_games_champions.map! { |champion_id| @service.champion_by_id champion_id }   
+      
+      suggestions = @service.similar_champions(recent_games_champions)
+      suggestions.each { |c|
+        p "#{c[:original].name} => #{c[:similar].name}"
+      }
       @process = :process_champion_suggestion_menu_input
       @context_stack.push(Context.new(ChampionSuggestionMenu.new, @process))
       @context_stack.top.menu.display_menu

@@ -236,24 +236,73 @@ module Model
     end
 
     it "Extracts Champion values from JSON correctly" do
-      champion = Champion.new(JSON.parse(CHAMPIONS)["champions"][0])
-      champion.id.should be_kind_of Integer
-      champion.name.should be_kind_of String
-      champion.defense_rank.should be_kind_of Integer
-      champion.attack_rank.should be_kind_of Integer
-      champion.magic_rank.should be_kind_of Integer
-      champion.difficulty_rank.should be_kind_of Integer
-
+      JSON.parse(CHAMPIONS)["data"].map do |champion_json|
+        champion = Champion.new(champion_json[1])
+        champion.key.should be_kind_of Integer
+        champion.name.should be_kind_of String
+        champion.title.should be_kind_of String
+        champion.stats.should be_kind_of Champion::Stats
+      end
+      
       # Correct handling of nil values (common for JSON)
       champion = Champion.new(nil)
-      champion.id.should be_kind_of Integer
+      champion.key.should be_kind_of Integer
       champion.name.should be_kind_of String
-      champion.defense_rank.should be_kind_of Integer
-      champion.attack_rank.should be_kind_of Integer
-      champion.magic_rank.should be_kind_of Integer
-      champion.difficulty_rank.should be_kind_of Integer
+      champion.title.should be_kind_of String
+      champion.stats.should be_kind_of Champion::Stats
     end
 
+    it "Extracts Champion::Stats values from JSON correctly" do
+      JSON.parse(CHAMPIONS)["data"].map do |champion_json|
+        champion = Champion.new(champion_json[1])
+        champion.stats.raw.should be_kind_of Hash
+        champion.stats.attack_range.should be_kind_of Float
+        champion.stats.mp_per_level.should be_kind_of Float
+        champion.stats.mp.should be_kind_of Float
+        champion.stats.attack_damage.should be_kind_of Float
+        champion.stats.hp.should be_kind_of Float
+        champion.stats.hp_per_level.should be_kind_of Float
+        champion.stats.attack_damage_per_level.should be_kind_of Float
+        champion.stats.armor.should be_kind_of Float
+        champion.stats.mp_regen_per_level.should be_kind_of Float
+        champion.stats.hp_regen.should be_kind_of Float
+        champion.stats.crit_per_level.should be_kind_of Float
+        champion.stats.spellblock_per_level.should be_kind_of Float
+        champion.stats.mp_regen.should be_kind_of Float
+        champion.stats.attack_speed_per_level.should be_kind_of Float
+        champion.stats.spellblock.should be_kind_of Float
+        champion.stats.move_speed.should be_kind_of Float
+        champion.stats.attack_speed_offset.should be_kind_of Float
+        champion.stats.crit.should be_kind_of Float
+        champion.stats.hp_regen_per_level.should be_kind_of Float
+        champion.stats.armor_per_level.should be_kind_of Float
+      end
+      
+      # Correct handling of nil values (common for JSON)
+      champion = Champion.new(nil)
+      champion.stats.raw.should be_kind_of Hash
+      champion.stats.attack_range.should be_kind_of Float
+      champion.stats.mp_per_level.should be_kind_of Float
+      champion.stats.mp.should be_kind_of Float
+      champion.stats.attack_damage.should be_kind_of Float
+      champion.stats.hp.should be_kind_of Float
+      champion.stats.hp_per_level.should be_kind_of Float
+      champion.stats.attack_damage_per_level.should be_kind_of Float
+      champion.stats.armor.should be_kind_of Float
+      champion.stats.mp_regen_per_level.should be_kind_of Float
+      champion.stats.hp_regen.should be_kind_of Float
+      champion.stats.crit_per_level.should be_kind_of Float
+      champion.stats.spellblock_per_level.should be_kind_of Float
+      champion.stats.mp_regen.should be_kind_of Float
+      champion.stats.attack_speed_per_level.should be_kind_of Float
+      champion.stats.spellblock.should be_kind_of Float
+      champion.stats.move_speed.should be_kind_of Float
+      champion.stats.attack_speed_offset.should be_kind_of Float
+      champion.stats.crit.should be_kind_of Float
+      champion.stats.hp_regen_per_level.should be_kind_of Float
+      champion.stats.armor_per_level.should be_kind_of Float
+    end
+    
     it "Extracts Item values from JSON correctly" do
       JSON.parse(ITEMS)["data"].each do |item_json|
         item = Item.new(item_json)
@@ -354,6 +403,8 @@ module Controller
           { status: :success, json: JSON.parse(SUMMONER_BY_NAME) }
         end
       end
+      
+      @query_service = QueryService.new @transport
     end
     
     describe "ContextStack" do
@@ -383,8 +434,6 @@ module Controller
 
     describe "QueryService" do
       it "Assigns players to teams correctly" do
-        query_service = QueryService.new @transport
-
         summoner1 = Model::Game::FellowPlayer.new({
           "teamId" => 100,
           "summonerId" => 1,
@@ -409,7 +458,7 @@ module Controller
           "championId" => 14
         })
 
-        blue_team, purple_team = query_service.assign_players([
+        blue_team, purple_team = @query_service.assign_players([
           summoner1,
           summoner2,
           summoner3,
@@ -421,10 +470,26 @@ module Controller
         purple_team.include?(summoner2).should eq true
         purple_team.include?(summoner4).should eq true
       end
+      
+      it "Extracts stats vector from champions array correctly" do
+        max_stats = @query_service.champion_max_stats
+        @query_service.champions.each do |champion|
+          max_stats.each do |key, value|
+            champion.stats.raw[key].should be <= value
+          end
+        end
+      end
+      
+      it "Normalizes values correctly" do
+        epsilon = 0.000001
+        (@query_service.normalize(1, 0, 10) - 0.1).should be <= epsilon
+        (@query_service.normalize(5, 0, 10) - 0.5).should be <= epsilon
+        (@query_service.normalize(5, 0, 60) - 0.08333333).should be <= epsilon
+      end
     end
-    end
+  end
     
-    describe "DataController" do
+  describe "DataController" do
       
   end
 end

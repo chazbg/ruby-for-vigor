@@ -65,7 +65,7 @@ module UserInterface
       (1...match_models.size).each do |match_index|
         match = match_models[match_index]
         
-        champion = champion_models.select { |champion| match.champion_id == champion.id }[0].name
+        champion = champion_models.select { |champion| match.champion_id == champion.key }[0].name
         
         @data << [
           "----------------------------------------",
