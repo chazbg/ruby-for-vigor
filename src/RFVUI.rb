@@ -190,6 +190,12 @@ module UserInterface
   end
   
   class ChampionSuggestionMenu < BasicMenu
+    def display_suggestions(suggestions)
+      @data = ["-------------------"]
+      suggestions.each do |s|
+        @data << "Similar champion to #{s[:original].name} is #{s[:similar].name}"
+      end
+    end
   end
   
   class GeneralAdviceMenu < BasicMenu

@@ -186,11 +186,12 @@ module Model
     attr_reader :champions
     
     class RankedChampion
-      attr_reader :name, :kills, :assists, :deaths, :first_bloods, :max_champions_killed, :minions_killed, :average_kills, :average_deaths, :average_assists, :average_minions, :first_blood_probability, :total_games
+      attr_reader :name, :id, :kills, :assists, :deaths, :first_bloods, :max_champions_killed, :minions_killed, :average_kills, :average_deaths, :average_assists, :average_minions, :first_blood_probability, :total_games
       
       def initialize(champion_json = {})
         champion_json ||= {}
         
+        @id = champion_json["id"] || 0
         @name = champion_json["name"] || ""
         @kills = champion_json["stats"]["totalChampionKills"] || 0
         @assists = champion_json["stats"]["totalAssists"] || 0

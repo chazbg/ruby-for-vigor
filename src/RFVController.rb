@@ -238,8 +238,7 @@ module Controller
           closest_champion[:champion] = champion 
         end
       end
-      
-      p closest_champion[:distance]
+
       closest_champion[:champion]
     end
     
@@ -381,17 +380,26 @@ module Controller
     def champion_suggestion_menu_transition(input)
       summoner = @context_stack.top.args
 
-      matches = @service.request_recent_games(summoner.server, summoner.id)
+      query_champions = @service.request_ranking_stats(summoner.server, summoner.id, "season4")
+        .champions.map { |champion| @service.champion_by_id champion.id }
+        .select { |champion| champion != nil }
       
-      recent_games_champions = matches.map { |match| match.champion_id }.uniq
-      recent_games_champions.map! { |champion_id| @service.champion_by_id champion_id }   
+      if 0 == query_champions.size
+        matches = @service.request_recent_games(summoner.server, summoner.id)
+        
+        query_champions = matches.map { |match| match.champion_id }.uniq
+        query_champions.map! { |champion_id| @service.champion_by_id champion_id }   
+      end
+
+      suggestions = @service.similar_champions(query_champions)
       
-      suggestions = @service.similar_champions(recent_games_champions)
-      suggestions.each { |c|
-        p "#{c[:original].name} => #{c[:similar].name}"
-      }
+      # suggestions.each { |c|
+        # p "#{c[:original].name} => #{c[:similar].name}"
+      # }
+      menu = ChampionSuggestionMenu.new
+      menu.display_suggestions suggestions
       @process = :process_champion_suggestion_menu_input
-      @context_stack.push(Context.new(ChampionSuggestionMenu.new, @process))
+      @context_stack.push(Context.new(menu, @process))
       @context_stack.top.menu.display_menu
     end
     
