@@ -373,7 +373,7 @@ end
 module Controller
   describe "Controller" do
     before(:each) do
-      @transport = double(Transport)
+      @transport = double(Transport::HTTPTransport)
       @transport.stub(:send_request) do |uri|
         if uri.path.include? "champion"
           {status: :success, json: JSON.parse(CHAMPIONS)}
