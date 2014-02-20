@@ -3,7 +3,7 @@ require 'date'
 module Model
   class Summoner
     attr_reader :server, :id, :name, :level
-    
+
     def initialize(summoner_json = {}, server = "")
       summoner_json ||= {}
 
@@ -13,13 +13,13 @@ module Model
       @level = summoner_json["summonerLevel"] || 0
     end
   end
-  
+
   class Game
     attr_reader :champion_id, :create_date, :fellow_players, :game_mode, :game_type, :map_id, :spell1, :spell2, :stats, :sub_type, :team_id
-  
+
     class FellowPlayer
       attr_accessor :champion_id, :team_id, :summoner_id
-      
+
       def initialize(fellow_player_json = {})
         fellow_player_json ||= {}
         @champion_id = fellow_player_json["championId"] || 0
@@ -27,10 +27,10 @@ module Model
         @summoner_id = fellow_player_json["summonerId"] || 0
       end
     end
-    
+
     class Stats
       attr_reader :assists, :barracks_killed, :champions_killed, :combat_player_score, :consumables_purchased, :damage_dealt_player, :double_kills, :first_blood, :gold, :gold_earned, :gold_spent, :item0, :item1, :item2, :item3, :item4, :item5, :item6, :items_purchased, :killing_sprees, :largest_critical_strike, :largest_killing_spree, :largest_multi_kill, :legendary_items_created, :level, :magic_damage_dealt_player, :magic_damage_dealt_to_champions, :magic_damage_taken, :minions_denied, :minions_killed, :neutral_minions_killed, :neutral_minions_killed_enemy_jungle, :neutral_minions_killed_your_jungle, :nexus_killed, :node_capture, :node_capture_assist, :node_neutralize, :node_neutralize_assist, :num_deaths, :num_items_bought, :objective_player_score, :penta_kills, :physical_damage_dealt_player, :physical_damage_dealt_to_champions, :physical_damage_taken, :quadra_kills, :sight_wards_bought, :spell1_cast, :spell2_cast, :spell3_cast, :spell4_cast, :summoner_spell1_cast, :summoner_spell2_cast, :super_monsters_killed, :team, :team_objective, :time_played, :total_damage_dealt, :total_damage_dealt_to_champions, :total_heal, :total_player_score, :total_score_rank, :total_time_crowd_control_dealt, :total_units_healed, :triple_kills, :true_damage_dealt_player, :true_damage_dealt_to_champions, :total_damage_taken, :true_damage_taken, :turrets_killed, :unreal_kills, :victory_point_total, :vision_wards_bought, :ward_killed, :ward_placed, :win
-      
+
       def initialize(stats_json = {})
         stats_json ||= {}
         @assists = stats_json["assists"] || 0
@@ -111,7 +111,7 @@ module Model
         @win = stats_json["win"] # The user of this class should check for nil because we risk showing incorrect data.
       end
     end
-    
+
     def initialize(game_json = {})
       game_json ||= {}
       @champion_id = game_json["championId"] || 0
@@ -128,13 +128,13 @@ module Model
       @team_id = game_json["teamId"] || 0
     end
   end
-  
+
   class Champion
     attr_reader :key, :name, :title, :stats
-    
+
     class Stats
       attr_reader :raw, :attack_range, :mp_per_level, :mp, :attack_damage, :hp, :hp_per_level, :attack_damage_per_level, :armor, :mp_regen_per_level, :hp_regen, :crit_per_level, :spellblock_per_level, :mp_regen, :attack_speed_per_level, :spellblock, :move_speed, :attack_speed_offset, :crit, :hp_regen_per_level, :armor_per_level
-      
+
       def initialize(stats_json = {})
         stats_json ||= {}
         @raw = stats_json
@@ -160,7 +160,7 @@ module Model
         @armor_per_level = (stats_json["armorperlevel"]  || 0).to_f
       end
     end
-    
+
     def initialize(champion_json = {})
       champion_json ||= {}
       @key = (champion_json["key"] || 0).to_i
@@ -169,28 +169,28 @@ module Model
       @stats = Stats.new(champion_json["stats"])
     end
   end
-  
+
   class Item
     attr_reader :id, :name, :top_tier
-    
+
     def initialize(item_json = {})
       item_json ||= {}
-      
+
       @id = item_json[0].to_i
       @name = item_json[1]["name"]
       item_json[1]["into"] == nil ? @top_tier = true : @top_tier = false
     end
   end
-  
+
   class RankedStats
     attr_reader :champions
-    
+
     class RankedChampion
       attr_reader :name, :id, :kills, :assists, :deaths, :first_bloods, :max_champions_killed, :minions_killed, :average_kills, :average_deaths, :average_assists, :average_minions, :first_blood_probability, :total_games, :games_won, :win_ratio
-      
+
       def initialize(champion_json = {})
         champion_json ||= {}
-        
+
         @id = champion_json["id"] || 0
         @name = champion_json["name"] || ""
         @kills = champion_json["stats"]["totalChampionKills"] || 0
@@ -209,19 +209,19 @@ module Model
         if @total_games == 0 then @win_ratio = 0 else @win_ratio = @games_won.to_f / @total_games end
       end
     end
-    
+
     def initialize(ranked_stats_json = {})
       ranked_stats_json ||= {}
-      
-      @champions = (ranked_stats_json["champions"] || []).map do |champion_json| 
-        RankedChampion.new(champion_json) 
-      end 
+
+      @champions = (ranked_stats_json["champions"] || []).map do |champion_json|
+        RankedChampion.new(champion_json)
+      end
     end
   end
-  
+
   class SummonerSpell
     attr_reader :name, :modes, :key
-    
+
     def initialize(summoner_spell_json = {})
       summoner_spell_json ||= {}
 
