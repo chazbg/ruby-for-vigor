@@ -23,15 +23,15 @@ module Controller
       @stack << context
     end
 
-    def top()
+    def top
       @stack.last
     end
 
-    def pop()
+    def pop
       @stack.pop
     end
 
-    def rollback()
+    def rollback
       @stack = [@stack[0]]
     end
   end
@@ -167,7 +167,7 @@ module Controller
       item_build = []
       (0...6).each do |i|
         item = items_pool[rand(0...items_pool.size)]
-        items_pool.delete item
+        items_pool.delete(item)
         item_build << item
       end
 
@@ -187,29 +187,18 @@ module Controller
       @summoner_spells.select { |summoner_spell| summoner_spell.key == summoner_spell_id }[0]
     end
 
-    def champion_max_stats
-      max_stats = @champions[0].stats.raw.clone
-
-      #TODO: fill min and max arrays in one method
-      @champions.each do |champion|
-        champion.stats.raw.each do |key, value|
-          max_stats[key] = [max_stats[key], value].max
-        end
-      end
-
-      max_stats
-    end
-
-    def champion_min_stats
+    def champion_min_max_stats
       min_stats = @champions[0].stats.raw.clone
+      max_stats = @champions[0].stats.raw.clone
 
       @champions.each do |champion|
         champion.stats.raw.each do |key, value|
           min_stats[key] = [min_stats[key], value].min
+          max_stats[key] = [max_stats[key], value].max
         end
       end
 
-      min_stats
+      min_stats, max_stats
     end
 
     def normalize(current_value, min_value, max_value)
@@ -221,8 +210,7 @@ module Controller
     end
 
     def closest_champion(query_champion, champion_pool)
-      max_values = champion_max_stats
-      min_values = champion_min_stats
+      min_stats, max_stats = champion_min_max_stats
 
       closest_champion = {distance: 10000, champion: nil}
 
@@ -230,9 +218,9 @@ module Controller
         distance = 0
 
         champion.stats.raw.each do |key, observed_value|
-          if max_values[key] != 0.0
-            expected_value = normalize(query_champion.stats.raw[key], min_values[key], max_values[key])
-            observed_value = normalize(observed_value, min_values[key], max_values[key])
+          if max_stats[key] != 0.0
+            expected_value = normalize(query_champion.stats.raw[key], min_stats[key], max_stats[key])
+            observed_value = normalize(observed_value, min_stats[key], max_stats[key])
             if expected_value == 0 then expected_value = 0.1 end
             distance += ((observed_value - expected_value).abs ** 2) / expected_value
           end

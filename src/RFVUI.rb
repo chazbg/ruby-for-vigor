@@ -1,46 +1,46 @@
 module UserInterface
   class BasicMenu
-    def initialize()
+    def initialize
       @data = ""
     end
 
-    def display_menu()
+    def display_menu
       puts [
         @data,
         "B. Back",
         "H. Home",
-        "Q. Quit"        
+        "Q. Quit"
       ]
     end
   end
 
   class MainMenu < BasicMenu
-    def display_menu()
+    def display_menu
       puts [
         "1. Get summoner statistics",
         "2. Ultimate Bravery",
-        "Q. Quit"  
+        "Q. Quit"
       ]
     end
   end
 
   class RegionMenu < BasicMenu
-    def display_menu()
+    def display_menu
       puts [
         "Select region (NA/EUW/EUNE/KR/BR)",
         "B. Back",
-        "Q. Quit"  
+        "Q. Quit"
       ]
     end
   end
 
   class SummonerNameMenu < BasicMenu
-    def display_menu()
+    def display_menu
       puts [
         "Enter summoner name",
         "B. Back",
         "H. Home",
-        "Q. Quit"  
+        "Q. Quit"
       ]
     end
   end
@@ -238,10 +238,10 @@ module UserInterface
       puts [
         @data,
         "B. Back",
-        "Q. Quit"        
+        "Q. Quit"
       ]
     end
-    
+
     def display_build(build)
       @data = [
         "Ultimate Bravery challenges you to play with a randomly selected build.",
