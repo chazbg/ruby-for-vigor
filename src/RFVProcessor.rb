@@ -10,7 +10,6 @@ class MenuInputProcessor
   end
 
   private
-
   def process_main_menu_input(input)
     case input
       when '1'

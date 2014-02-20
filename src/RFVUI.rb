@@ -12,6 +12,10 @@ module UserInterface
         "Q. Quit"
       ]
     end
+
+    def display_error(message)
+      puts message
+    end
   end
 
   class MainMenu < BasicMenu
@@ -64,10 +68,10 @@ module UserInterface
   class MatchesMenu < BasicMenu
     def display_matches_info(match_models, champion_models)
       @data = []
-      (1...match_models.size).each do |match_index|
+      (0...match_models.size).each do |match_index|
         match = match_models[match_index]
 
-        champion = champion_models.select { |champion| match.champion_id == champion.key }[0].name
+        champion = champion_models.find { |champ| match.champion_id == champ.key }.name
 
         @data << [
           "----------------------------------------",
@@ -123,7 +127,6 @@ module UserInterface
     end
 
     private
-
     def item_build_string(items, stats)
       item_ids = [
         stats.item0,

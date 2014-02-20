@@ -6,7 +6,7 @@ class Transport
     result = {}
     response = Net::HTTP.get_response(uri)
 
-    if response.is_a?(Net::HTTPSuccess) && response.body != ""
+    if response.is_a?(Net::HTTPSuccess) and response.body != ""
       result[:status] = :success
       result[:json] = JSON.parse response.body
     else

@@ -36,6 +36,30 @@ module Controller
     end
   end
 
+  class Utils
+    def self.assign_players(players)
+      blue_team = []
+      purple_team = []
+
+      players.each do |player|
+        case player.team_id
+          when 100 then blue_team << player
+          when 200 then purple_team << player
+        end
+      end
+
+      [blue_team, purple_team]
+    end
+
+    def self.normalize(current_value, min_value, max_value)
+      if min_value == max_value
+        1
+      else
+        (current_value.to_f - min_value) / (max_value - min_value)
+      end
+    end
+  end
+
   class QueryService
     include Model
     include Protocol
@@ -51,8 +75,6 @@ module Controller
         @champions = champions_response[:json]["data"].map do |champion_json|
           Champion.new(champion_json[1])
         end
-      else
-        puts "Server error"
       end
 
       items_response = @transport.send_request(Items.create_request("NA"))
@@ -61,8 +83,6 @@ module Controller
         @items = items_response[:json]["data"].map do |item_json|
           Item.new(item_json)
         end
-      else
-        puts "Server error"
       end
 
       summoner_spells_response = @transport.send_request(SummonerSpells.create_request("NA"))
@@ -71,32 +91,15 @@ module Controller
         @summoner_spells = summoner_spells_response[:json]["data"].map do |summoner_spell_json|
           SummonerSpell.new(summoner_spell_json[1])
         end
-      else
-        puts "Server error"
       end
-    end
-
-    def assign_players(players)
-      blue_team = []
-      purple_team = []
-
-      players.each do |player|
-        if player.team_id == 100
-          blue_team << player
-        elsif player.team_id == 200
-          purple_team << player
-        end
-      end
-
-      [blue_team, purple_team]
     end
 
     def player_detailed_info(server, player)
       request = SummonersByIds.create_request(server, [player.summoner_id])
       response = @transport.send_request(request)
       detailed_info = {}
+      champion_name = @champions.find { |champion| player.champion_id == champion.key }.name
 
-      champion_name = @champions.select { |champion| player.champion_id == champion.key }[0].name
       if response[:status] == :success
         summoner_info = Summoner.new(response[:json][player.summoner_id.to_s])
         detailed_info = {
@@ -104,8 +107,6 @@ module Controller
           name: summoner_info.name,
           champion: champion_name
         }
-      else
-        puts "Server error"
       end
 
       detailed_info
@@ -116,7 +117,7 @@ module Controller
       response = @transport.send_request(request)
 
       if response[:status] == :success
-        summoners = names.map { |name| Summoner.new(response[:json][name], server) }
+        names.map { |name| Summoner.new(response[:json][name], server) }
       else
         []
       end
@@ -127,7 +128,7 @@ module Controller
       response = @transport.send_request(request)
 
       if response[:status] == :success
-        matches = response[:json]["games"].map { |game_json| Game.new(game_json) }
+        response[:json]["games"].map { |game_json| Game.new(game_json) }
       else
         []
       end
@@ -146,7 +147,7 @@ module Controller
       response = @transport.send_request(request)
 
       if response[:status] == :success
-        stats = RankedStats.new(response[:json])
+        RankedStats.new(response[:json])
       else
         nil
       end
@@ -180,11 +181,11 @@ module Controller
     end
 
     def champion_by_id(champion_id)
-      @champions.select { |champion| champion.key == champion_id }[0]
+      @champions.find { |champion| champion.key == champion_id }
     end
 
     def summoner_spell_by_id(summoner_spell_id)
-      @summoner_spells.select { |summoner_spell| summoner_spell.key == summoner_spell_id }[0]
+      @summoner_spells.find { |summoner_spell| summoner_spell.key == summoner_spell_id }
     end
 
     def champion_min_max_stats
@@ -198,15 +199,7 @@ module Controller
         end
       end
 
-      min_stats, max_stats
-    end
-
-    def normalize(current_value, min_value, max_value)
-      if min_value == max_value
-        1
-      else
-        (current_value.to_f - min_value) / (max_value - min_value)
-      end
+      [min_stats, max_stats]
     end
 
     def closest_champion(query_champion, champion_pool)
@@ -218,10 +211,11 @@ module Controller
         distance = 0
 
         champion.stats.raw.each do |key, observed_value|
-          if max_stats[key] != 0.0
-            expected_value = normalize(query_champion.stats.raw[key], min_stats[key], max_stats[key])
-            observed_value = normalize(observed_value, min_stats[key], max_stats[key])
-            if expected_value == 0 then expected_value = 0.1 end
+          unless 0.0 == max_stats[key] 
+            expected_value = Utils::normalize(query_champion.stats.raw[key], min_stats[key], max_stats[key])
+            observed_value = Utils::normalize(observed_value, min_stats[key], max_stats[key])
+
+            if 0 == expected_value then expected_value = 0.1 end
             distance += ((observed_value - expected_value).abs ** 2) / expected_value
           end
         end
@@ -237,6 +231,7 @@ module Controller
 
     def similar_champions(query_champions)
       champions_pool = @champions - query_champions
+
       query_champions.map do |query_champion|
         {
           original: query_champion,
@@ -264,7 +259,6 @@ module Controller
     end
 
     private
-
     def region_menu_transition(input)
       @process = :process_region_menu_input
       @context_stack.push(Context.new(RegionMenu.new, @process))
@@ -282,14 +276,13 @@ module Controller
       server = @context_stack.top.args
       summoners = @service.request_summoners(server, [input])
 
-      if 0 != summoners.size
+      unless 0 == summoners.size
         menu = SummonerMenu.new
         @process = :process_summoner_menu_input
         @context_stack.push(Context.new(menu, @process, summoners[0]))
         @context_stack.top.menu.display_summoner_info(summoners[0])
       else
-        # TODO: Call UI.displayerror
-        puts "Summoner name #{ input } not existing"
+        @context_stack.top.menu("Summoner name #{ input } not existing")
       end
 
       @context_stack.top.menu.display_menu
@@ -300,15 +293,14 @@ module Controller
 
       matches = @service.request_recent_games(summoner.server, summoner.id)
 
-      if 0 != matches.size
+      if 0 < matches.size
         @process = :process_matches_menu_input
         menu = MatchesMenu.new
         menu.display_matches_info(matches, @service.champions)
         args = {matches: matches, current_summoner: summoner}
         @context_stack.push(Context.new(menu, @process, args))
       else
-        # TODO: Call UI.displayerror
-        puts "Server error"
+        @context_stack.top.menu.display_error("Server error")
       end
 
       @context_stack.top.menu.display_menu
@@ -317,26 +309,17 @@ module Controller
     def match_details_transition(input)
       matches = @context_stack.top.args[:matches]
       summoner = @context_stack.top.args[:current_summoner]
+      index = input.to_i
 
-      if input == '0'
-        index = 0
-      elsif (input.to_i > 0) && (input.to_i < matches.size)
-        index = input.to_i
-      else
-        index = -1
-      end
-
-      if index != -1
-        current_summoner = @service.create_player(
-          summoner.id,
-          matches[index].team_id,
-          matches[index].champion_id
-        )
+      if (0...matches.size).include?(index)
+        current_summoner = @service.create_player(summoner.id,
+                                                  matches[index].team_id,
+                                                  matches[index].champion_id)
 
         players = [current_summoner]
         players += matches[index].fellow_players
 
-        blue_team, purple_team = @service.assign_players(players)
+        blue_team, purple_team = Utils::assign_players(players)
 
         blue_team.map! { |player| @service.player_detailed_info(summoner.server, player) }
         purple_team.map! { |player| @service.player_detailed_info(summoner.server, player) }
@@ -346,7 +329,7 @@ module Controller
         menu.dislpay_match_details(matches[index], @service.items, blue_team, purple_team)
         @context_stack.push(Context.new(menu, @process))
       else
-        puts "Invalid game index"
+        @context_stack.top.menu.display_error("Invalid game index")
       end
 
       @context_stack.top.menu.display_menu
@@ -357,14 +340,13 @@ module Controller
 
       ranked_stats = @service.request_ranking_stats(summoner.server, summoner.id, "season4")
 
-      if nil != ranked_stats
+      if ranked_stats
         @process = :process_ranking_menu_input
         menu = RankingMenu.new
         menu.display_ranking_stats(ranked_stats)
         @context_stack.push(Context.new(menu, @process))
       else
-        # TODO: Call UI.displayerror
-        puts "Server error"
+        @context_stack.top.menu.display_error("Server error")
       end
 
       @context_stack.top.menu.display_menu
@@ -373,9 +355,9 @@ module Controller
     def champion_suggestion_menu_transition(input)
       summoner = @context_stack.top.args
 
-      query_champions = @service.request_ranking_stats(summoner.server, summoner.id, "season4")
-        .champions.map { |champion| @service.champion_by_id champion.id }
-        .select { |champion| champion != nil }
+      query_champions = @service.request_ranking_stats(summoner.server, summoner.id, "season4").champions
+      query_champions.map! { |champion| @service.champion_by_id champion.id }
+      query_champions.select! { |champion| champion != nil }
 
       if 0 == query_champions.size
         matches = @service.request_recent_games(summoner.server, summoner.id)
@@ -488,7 +470,7 @@ module Controller
     end
 
     def invalid_transition(input)
-      puts "Invalid option"
+      @context_stack.top.menu.display_error("Invalid option")
       @context_stack.top.menu.display_menu
     end
   end

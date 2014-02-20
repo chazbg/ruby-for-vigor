@@ -289,7 +289,7 @@ module Model
 
       @id = item_json[0].to_i
       @name = item_json[1]["name"]
-      item_json[1]["into"] == nil ? @top_tier = true : @top_tier = false
+      @top_tier = item_json[1]["into"] == nil ? true : false
     end
   end
 
@@ -332,7 +332,7 @@ module Model
         @average_assists = @total_games > 0 ? @assists.to_f / @total_games : 0.0
         @average_minions = @total_games > 0 ? @minions_killed.to_f / @total_games : 0.0
         @first_blood_probability = @total_games > 0 ? @first_bloods.to_f / @total_games : 0.0
-        @total_games == 0 ? @win_ratio = 0 : @win_ratio = @games_won.to_f / @total_games
+        @win_ratio = @total_games == 0 ? 0 : @games_won.to_f / @total_games
       end
     end
 

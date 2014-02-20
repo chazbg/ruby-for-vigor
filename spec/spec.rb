@@ -243,7 +243,7 @@ module Model
         champion.title.should be_kind_of String
         champion.stats.should be_kind_of Champion::Stats
       end
-      
+
       # Correct handling of nil values (common for JSON)
       champion = Champion.new(nil)
       champion.key.should be_kind_of Integer
@@ -277,7 +277,7 @@ module Model
         champion.stats.hp_regen_per_level.should be_kind_of Float
         champion.stats.armor_per_level.should be_kind_of Float
       end
-      
+
       # Correct handling of nil values (common for JSON)
       champion = Champion.new(nil)
       champion.stats.raw.should be_kind_of Hash
@@ -302,7 +302,7 @@ module Model
       champion.stats.hp_regen_per_level.should be_kind_of Float
       champion.stats.armor_per_level.should be_kind_of Float
     end
-    
+
     it "Extracts Item values from JSON correctly" do
       JSON.parse(ITEMS)["data"].each do |item_json|
         item = Item.new(item_json)
@@ -311,15 +311,15 @@ module Model
         item.top_tier.should_not eq nil
       end
     end
-    
+
     it "Extracts RankedStats values from JSON correctly" do
       ranked_stats = RankedStats.new(JSON.parse(RANKED_STATS))
       ranked_stats.champions.should be_kind_of Array
-      
+
       ranked_stats = RankedStats.new(nil)
       ranked_stats.champions.should be_kind_of Array
     end
-    
+
     it "Extracts RankedStats::RankedChampion values from JSON correctly" do
       ranked_stats = RankedStats.new(JSON.parse(RANKED_STATS))
       ranked_stats.champions.each do |champion|
@@ -337,7 +337,7 @@ module Model
         champion.average_minions.should be_kind_of Float
         champion.first_blood_probability.should be_kind_of Float
       end
-      
+
       ranked_stats = RankedStats.new(nil)
       ranked_stats.champions.each do |champion|
         champion.name.should be_kind_of String
@@ -355,14 +355,14 @@ module Model
         champion.first_blood_probability.should be_kind_of Float
       end
     end
-    
+
     it "Extracts SummonerSpell values from JSON correctly" do
       JSON.parse(SUMMONER_SPELLS)["data"].each do |summoner_spell_json|
         summoner_spell = SummonerSpell.new(summoner_spell_json[1])
         summoner_spell.name.should be_kind_of String
         summoner_spell.modes.should be_kind_of Array
       end
-      
+
       summoner_spell = SummonerSpell.new(nil)
       summoner_spell.name.should be_kind_of String
       summoner_spell.modes.should be_kind_of Array
@@ -403,10 +403,10 @@ module Controller
           {status: :success, json: JSON.parse(SUMMONER_BY_NAME)}
         end
       end
-      
+
       @query_service = QueryService.new @transport
     end
-    
+
     describe "ContextStack" do
       it "Pushes contexts correctly" do
         stack = ContextStack.new
@@ -432,7 +432,7 @@ module Controller
       end
     end
 
-    describe "QueryService" do
+    describe "Utils" do
       it "Assigns players to teams correctly" do
         summoner1 = Model::Game::FellowPlayer.new({
           "teamId" => 100,
@@ -458,7 +458,7 @@ module Controller
           "championId" => 14
         })
 
-        blue_team, purple_team = @query_service.assign_players([
+        blue_team, purple_team = Utils::assign_players([
           summoner1,
           summoner2,
           summoner3,
@@ -470,26 +470,32 @@ module Controller
         purple_team.include?(summoner2).should eq true
         purple_team.include?(summoner4).should eq true
       end
-      
+
+      it "Normalizes values correctly" do
+        epsilon = 0.000001
+        (Utils::normalize(1, 0, 10) - 0.1).should be <= epsilon
+        (Utils::normalize(5, 0, 10) - 0.5).should be <= epsilon
+        (Utils::normalize(5, 0, 60) - 0.08333333).should be <= epsilon
+      end
+    end
+
+    describe "QueryService" do
       it "Extracts stats vector from champions array correctly" do
-        max_stats = @query_service.champion_max_stats
+        min_stats, max_stats = @query_service.champion_min_max_stats
         @query_service.champions.each do |champion|
+          min_stats.each do |key, value|
+            champion.stats.raw[key].should be >= value
+          end
+
           max_stats.each do |key, value|
             champion.stats.raw[key].should be <= value
           end
         end
       end
-      
-      it "Normalizes values correctly" do
-        epsilon = 0.000001
-        (@query_service.normalize(1, 0, 10) - 0.1).should be <= epsilon
-        (@query_service.normalize(5, 0, 10) - 0.5).should be <= epsilon
-        (@query_service.normalize(5, 0, 60) - 0.08333333).should be <= epsilon
-      end
     end
   end
-    
+
   describe "DataController" do
-      
+
   end
 end
