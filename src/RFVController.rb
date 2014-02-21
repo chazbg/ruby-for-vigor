@@ -121,7 +121,7 @@ module Controller
         item_build: item_build
       }
     end
-    
+
     def closest_champion(query_champion, champion_pool)
       min_stats =  @champions.min_stats
       max_stats = @champions.max_stats
@@ -150,12 +150,12 @@ module Controller
         }
       end
     end
-    
+
     private
     def choose_champion
       @champions[rand(0...@champions.size)].name
     end
-    
+
     def choose_summoner_spells
       summoner_spells_pool = @summoner_spells.select { |spell| spell.modes.include?("CLASSIC") }
       summoner_spells_pool.map! { |spell| spell.name }
@@ -165,18 +165,18 @@ module Controller
       summoner_spell2 = summoner_spells_pool[rand(0...summoner_spells_pool.size)]
       [summoner_spell1, summoner_spell2]
     end
-    
+
     def choose_item_build
       items_pool = @items.select { |item| item.top_tier }
       items_pool.map! { |item| item.name }
       item_build = []
-      
+
       (0...6).each do |i|
         item = items_pool[rand(0...items_pool.size)]
         items_pool.delete(item)
         item_build << item
       end
-      
+
       item_build
     end
   end
@@ -258,10 +258,10 @@ module Controller
 
       blue_team.map! { |player| @service.player_detailed_info(summoner_info.server, player) }
       purple_team.map! { |player| @service.player_detailed_info(summoner_info.server, player) }
-      
+
       [blue_team, purple_team]
     end
-    
+
     def match_details_transition(input)
       matches = @context_stack.top.args[:matches]
       summoner_info = @context_stack.top.args[:current_summoner]
@@ -273,9 +273,9 @@ module Controller
 
         @process = :process_match_details_menu_input
         menu = MatchDetails.new
-        menu.dislpay_match_details(matches[index], 
-                                   @service.items, 
-                                   blue_team, 
+        menu.dislpay_match_details(matches[index],
+                                   @service.items,
+                                   blue_team,
                                    purple_team)
         @context_stack.push(Context.new(menu, @process))
       else
@@ -313,34 +313,29 @@ module Controller
         champions = matches.map { |match| match.champion_id }.uniq
         champions.map! { |champion_id| @service.champions.find_by_id(champion.id) }
       end
+
+      champions
     end
-    
+
     def champion_suggestion_menu_transition(input)
       summoner = @context_stack.top.args
       query_champions = preferred_champions(summoner)
       suggestions = @service.similar_champions(query_champions)
       menu = ChampionSuggestionMenu.new
-      
+
       menu.display_suggestions suggestions
       @process = :process_champion_suggestion_menu_input
       @context_stack.push(Context.new(menu, @process))
       @context_stack.top.menu.display_menu
     end
 
-    def general_advice_menu_transition(input)
-      summoner = @context_stack.top.args
-      matches = @service.recent_games(summoner.server, summoner.id)
-
-      checklist = {
-        jungle_cs: :not_available,
-        average_cs: :not_ok,
-        average_wards: :not_ok,
-        average_deaths: :not_ok
-      }
-
-      #jungler games
+    def get_jungler_games(games)
       smite_id = @service.summoner_spells.find_by_name("Smite").key
-      jungler_games = matches.select { |match| match.spell1 == smite_id or match.spell2 == smite_id }
+      games.select { |game| game.spell1 == smite_id or game.spell2 == smite_id }
+    end
+
+    def check_jungler_games(games)
+      jungler_games = get_jungler_games(games)
 
       jungler_games_cs = 0
       jungler_games_minutes = 0
@@ -349,16 +344,14 @@ module Controller
         jungler_games_minutes += game.stats.time_played / SECONDS_PER_MINUTE
       end
 
-      if jungler_games.size > 0
-        if jungler_games_cs < jungler_games_minutes * JUNGLE_CS_PER_MINUTE
-          checklist[:jungle_cs] = :not_ok
-        else
-          checklist[:jungle_cs] = :ok
-        end
-      end
+      return :not_available if jungler_games.size == 0
+      return :ok if jungler_games_minutes * JUNGLE_CS_PER_MINUTE
+      return :not_ok
+    end
 
-      #rest games
-      games_rest = matches - jungler_games
+    def check_carry_games(games)
+      jungler_games = get_jungler_games(games)
+      games_rest = games - jungler_games
       games_rest_cs = 0
       games_rest_minutes = 0
 
@@ -367,23 +360,46 @@ module Controller
         games_rest_minutes += game.stats.time_played / SECONDS_PER_MINUTE
       end
 
-      checklist[:average_cs] = :ok if games_rest_cs >= games_rest_minutes * AVERAGE_CS_PER_MINUTE
+      return :ok if games_rest_cs >= games_rest_minutes * AVERAGE_CS_PER_MINUTE
+      return :not_ok
+    end
 
-      #wards
+    def check_wards(games)
       wards_placed = 0
       minutes_played = 0
-      deaths = 0
 
-      matches.each do |game|
+      games.each do |game|
         wards_placed += game.stats.ward_placed
+        minutes_played += game.stats.time_played / SECONDS_PER_MINUTE
+      end
+
+      return :ok if wards_placed >= minutes_played * WARDS_PER_MINUTE
+      return :not_ok
+    end
+
+    def check_deaths(games)
+      deaths = 0
+      minutes_played = 0
+
+      games.each do |game|
         minutes_played += game.stats.time_played / SECONDS_PER_MINUTE
         deaths += game.stats.num_deaths
       end
 
-      checklist[:average_wards] = :ok if wards_placed >= minutes_played * WARDS_PER_MINUTE
+      return :ok if deaths / games.size <= DEATHS_PER_GAME
+      return :not_ok
+    end
 
-      #deaths
-      checklist[:average_deaths] = :ok if deaths / matches.size <= DEATHS_PER_GAME
+    def general_advice_menu_transition(input)
+      summoner = @context_stack.top.args
+      games = @service.recent_games(summoner.server, summoner.id)
+
+      checklist = {
+        jungle_cs: check_jungler_games(games),
+        average_cs: check_carry_games(games),
+        average_wards: check_wards(games),
+        average_deaths: check_deaths(games)
+      }
 
       menu = GeneralAdviceMenu.new
       menu.display_general_advice(checklist)
