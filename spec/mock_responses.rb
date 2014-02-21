@@ -3284,7 +3284,7 @@ CHAMPIONS = '
    "version": "4.2.6"
 }
 '.freeze
- 
+
 FELLOW_PLAYERS = '
                 [
                   {
@@ -3333,7 +3333,7 @@ FELLOW_PLAYERS = '
                      "summonerId": 19540286
                   }
                ]'
-   
+
 GAME_STATS = '{
                   "totalDamageDealtToChampions": 22675,
                   "item2": 3065,
@@ -3728,7 +3728,7 @@ LEAGUE = '
    "tier": "DIAMOND"
 }]
       '.freeze
-  
+
 SUMMARY = '
 {
    "playerStatSummaries": [

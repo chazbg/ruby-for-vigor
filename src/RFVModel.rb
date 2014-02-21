@@ -1,5 +1,5 @@
 require 'date'
-require_relative 'RFVUtils' 
+require_relative 'RFVUtils'
 
 module Model
   class Summoner
@@ -224,7 +224,7 @@ module Model
       @spell1 = game_json["spell1"] || 0
       @spell2 = game_json["spell2"] || 0
       @stats = Stats.new(game_json["stats"])
-      @sub_type = game_json["subType"] || ""  
+      @sub_type = game_json["subType"] || ""
     end
   end
 
@@ -234,7 +234,7 @@ module Model
       games_json["games"].each { |game_json| self << Game.new(game_json, summoner_id) }
     end
   end
-  
+
   class Champion
     attr_reader :key,
                 :name,
@@ -297,10 +297,10 @@ module Model
       @name = champion_json["name"] || ""
       @stats = Stats.new(champion_json["stats"])
     end
-    
+
     def distance(other, min_stats, max_stats)
       distance = 0
-      
+
       other.stats.raw.each do |key, observed_value|
         unless 0.0 == max_stats[key]
           expected_value = Utils::normalize(@stats.raw[key], min_stats[key], max_stats[key])
@@ -310,7 +310,7 @@ module Model
           distance += ((observed_value - expected_value).abs ** 2) / expected_value
         end
       end
-      
+
       distance
     end
   end
@@ -329,7 +329,7 @@ module Model
     def find_by_id(champion_id)
       self.find { |champion| champion.key == champion_id }
     end
-    
+
     private
     def min_max_stats
       @min_stats = self[0].stats.raw.clone
@@ -362,7 +362,7 @@ module Model
 
       self.concat(item_array_json["data"].map { |item_json| Item.new(item_json) })
     end
-    
+
     def find_by_id(item_id)
       self.find { |item| item.id == item_id }
     end
@@ -435,18 +435,18 @@ module Model
   class SummonerSpellArray < Array
     def initialize(summoner_spell_array_json = {})
       summoner_spell_array_json ||= {}
-      
-      summoner_spell_array = summoner_spell_array_json["data"].map do |_, summoner_spell_json| 
+
+      summoner_spell_array = summoner_spell_array_json["data"].map do |_, summoner_spell_json|
         SummonerSpell.new(summoner_spell_json)
       end
-      
+
       self.concat(summoner_spell_array)
     end
-    
+
     def find_by_id(summoner_spell_id)
       self.find { |summoner_spell| summoner_spell.key == summoner_spell_id }
     end
-    
+
     def find_by_name(summoner_spell_name)
       self.find { |summoner_spell| summoner_spell.name == summoner_spell_name }
     end

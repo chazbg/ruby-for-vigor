@@ -80,6 +80,6 @@ module Protocol
   end
 
   private
-  URI_DOMAIN = "http://prod.api.pvp.net/api/lol/".freeze
+  URI_DOMAIN = "https://prod.api.pvp.net/api/lol/".freeze
   API_KEY = "9c3701eb-dea2-4906-b070-880ff89ff44b".freeze
 end
