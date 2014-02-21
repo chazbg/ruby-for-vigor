@@ -19,7 +19,7 @@ module Protocol
         SummonersByIds,
         Items,
         SummonerSpells
-      ].each { |request| request.create_request.class.should eq URI::HTTP }
+      ].each { |request| request.create_request.class.should eq URI::HTTPS }
     end
   end
 end
@@ -235,23 +235,41 @@ module Model
       game.team_id.should be_kind_of Integer
     end
 
-    it "Extracts Champion values from JSON correctly" do
-      JSON.parse(CHAMPIONS)["data"].map do |champion_json|
-        champion = Champion.new(champion_json[1])
+    describe "Champion" do
+      it "Extracts Champion values from JSON correctly" do
+        JSON.parse(CHAMPIONS)["data"].map do |champion_json|
+          champion = Champion.new(champion_json[1])
+          champion.key.should be_kind_of Integer
+          champion.name.should be_kind_of String
+          champion.title.should be_kind_of String
+          champion.stats.should be_kind_of Champion::Stats
+        end
+
+        # Correct handling of nil values (common for JSON)
+        champion = Champion.new(nil)
         champion.key.should be_kind_of Integer
         champion.name.should be_kind_of String
         champion.title.should be_kind_of String
         champion.stats.should be_kind_of Champion::Stats
       end
 
-      # Correct handling of nil values (common for JSON)
-      champion = Champion.new(nil)
-      champion.key.should be_kind_of Integer
-      champion.name.should be_kind_of String
-      champion.title.should be_kind_of String
-      champion.stats.should be_kind_of Champion::Stats
-    end
+      it "Calculates distance between champion stats vectors correctly" do
+        epsilon = 0.01
+        champions = ChampionArray.new(JSON.parse(CHAMPIONS))
+        min_stats = champions.min_stats
+        max_stats = champions.max_stats
 
+        champion1 = Champion.new(JSON.parse(CHAMPIONS)["data"]["Thresh"])
+        champion2 = Champion.new(JSON.parse(CHAMPIONS)["data"]["Aatrox"])
+
+        distance1 = champion1.distance(champion2, min_stats, max_stats)
+        distance2 = champion2.distance(champion1, min_stats, max_stats)
+        distance3 = champion2.distance(champion2, min_stats, max_stats)
+
+        (distance1 - distance2).abs.should  be < epsilon
+        distance3.should be < 0.01
+      end
+    end
     it "Extracts Champion::Stats values from JSON correctly" do
       JSON.parse(CHAMPIONS)["data"].map do |champion_json|
         champion = Champion.new(champion_json[1])
@@ -367,22 +385,30 @@ module Model
       summoner_spell.name.should be_kind_of String
       summoner_spell.modes.should be_kind_of Array
     end
-    
+
     it "Creates FellowPlayer instances with factory method" do
       player = Game::FellowPlayer.create(1, 2, 3)
-  
+
       player.should be_kind_of Game::FellowPlayer
       player.summoner_id.should eq 1
       player.team_id.should eq 2
       player.champion_id.should eq 3
     end
-  
+
+
     describe "ChampionArray" do
+      it "Extracts array of champions from JSON correctly" do
+        champ_array = ChampionArray.new(JSON.parse(CHAMPIONS))
+        champ_array.each do |champion|
+          champion.should be_kind_of Champion
+        end
+      end
+
       it "Sets min and max vectors correctly" do
         champ_array = ChampionArray.new(JSON.parse(CHAMPIONS))
         min_stats = champ_array.min_stats
         max_stats = champ_array.max_stats
-        
+
         champ_array.each do |champion|
           min_stats.each do |key, value|
             champion.stats.raw[key].should be >= value
@@ -393,29 +419,43 @@ module Model
           end
         end
       end
-      
+
       it "Finds champions by id correctly" do
         champ_array = ChampionArray.new(JSON.parse(CHAMPIONS))
         champion = champ_array.find_by_id(238)
         champion.name.should eq "Zed"
       end
     end
-    
+
     describe "ItemArray" do
+      it "Extracts array of items from JSON correctly" do
+        item_array = ItemArray.new(JSON.parse(ITEMS))
+        item_array.each do |item|
+          item.should be_kind_of Item
+        end
+      end
+
       it "Finds items by id correctly" do
         item_array = ItemArray.new(JSON.parse(ITEMS))
         item = item_array.find_by_id(1058)
         item.name.should eq "Needlessly Large Rod"
       end
     end
-    
+
     describe "SummonerSpellArray" do
+      it "Extracts array of summoner spells from JSON correctly" do
+        summoner_spell_array = SummonerSpellArray.new(JSON.parse(SUMMONER_SPELLS))
+        summoner_spell_array.each do |summoner_spell|
+          summoner_spell.should be_kind_of SummonerSpell
+        end
+      end
+
       it "Finds summoner spells by id correctly" do
         summoner_spell_array = SummonerSpellArray.new(JSON.parse(SUMMONER_SPELLS))
         summoner_spell = summoner_spell_array.find_by_id(12)
         summoner_spell.name.should eq "Teleport"
       end
-      
+
       it "Finds summoner spells by name correctly" do
         summoner_spell_array = SummonerSpellArray.new(JSON.parse(SUMMONER_SPELLS))
         summoner_spell = summoner_spell_array.find_by_name("Smite")
@@ -532,7 +572,7 @@ module Controller
         stack.pop
         stack.top.should eq context2
       end
-      
+
       it "Rolls contexts back correctly" do
         stack = ContextStack.new
         context1 = UserInterface::MainMenu.new
@@ -546,35 +586,20 @@ module Controller
       end
     end
 
-    
 
-    describe "QueryService" do      
+
+    describe "QueryService" do
       it "Initializes accessors correctly" do
         query_service = QueryService.new(@transport)
         query_service.champions.should be_kind_of Model::ChampionArray
         query_service.summoner_spells.should be_kind_of Model::SummonerSpellArray
         query_service.items.should be_kind_of Model::ItemArray
       end
-      
+
       it "Gets recent games correctly" do
         query_service = QueryService.new(@transport)
         query_service.recent_games("euw", 20548044).should be_kind_of Model::GameArray
       end
-      
-      it "Creates fellow player correctly" do
-        query_service = QueryService.new(@transport)
-        player = query_service.create_player(1, 2, 3)
-        
-        player.should be_kind_of Model::Game::FellowPlayer
-        player.summoner_id.should eq 1
-        player.team_id.should eq 2
-        player.champion_id.should eq 3
-      end
-    end
-    
-    
-    describe "DataController" do
-
     end
   end
 end

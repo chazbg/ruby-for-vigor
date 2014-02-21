@@ -95,10 +95,6 @@ module Controller
       end
     end
 
-    def create_player(summoner_id, team_id, champion_id)
-      Game::FellowPlayer.create(summoner_id, team_id, champion_id)
-    end
-
     def ranking_stats(server, summoner_id, season)
       request = SummonerRankedInfo.create_request(server, summoner_id, season)
       response = @transport.send_request(request)
@@ -344,9 +340,15 @@ module Controller
         jungler_games_minutes += game.stats.time_played / SECONDS_PER_MINUTE
       end
 
-      return :not_available if jungler_games.size == 0
-      return :ok if jungler_games_minutes * JUNGLE_CS_PER_MINUTE
-      return :not_ok
+      if jungler_games.size == 0
+        if jungler_games_cs >= jungler_games_minutes * JUNGLE_CS_PER_MINUTE
+          :ok
+        else
+          :not_ok
+        end
+      else
+        :not_available
+      end
     end
 
     def check_carry_games(games)
@@ -360,8 +362,11 @@ module Controller
         games_rest_minutes += game.stats.time_played / SECONDS_PER_MINUTE
       end
 
-      return :ok if games_rest_cs >= games_rest_minutes * AVERAGE_CS_PER_MINUTE
-      return :not_ok
+      if games_rest_cs >= games_rest_minutes * AVERAGE_CS_PER_MINUTE
+        :ok
+      else
+        :not_ok
+      end
     end
 
     def check_wards(games)
@@ -373,8 +378,11 @@ module Controller
         minutes_played += game.stats.time_played / SECONDS_PER_MINUTE
       end
 
-      return :ok if wards_placed >= minutes_played * WARDS_PER_MINUTE
-      return :not_ok
+      if wards_placed >= minutes_played * WARDS_PER_MINUTE
+        :ok
+      else
+        :not_ok
+      end
     end
 
     def check_deaths(games)
@@ -386,8 +394,11 @@ module Controller
         deaths += game.stats.num_deaths
       end
 
-      return :ok if deaths / games.size <= DEATHS_PER_GAME
-      return :not_ok
+      if deaths / games.size <= DEATHS_PER_GAME
+        :ok
+      else
+        :not_ok
+      end
     end
 
     def general_advice_menu_transition(input)

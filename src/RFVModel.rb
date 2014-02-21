@@ -306,8 +306,7 @@ module Model
           expected_value = Utils::normalize(@stats.raw[key], min_stats[key], max_stats[key])
           observed_value = Utils::normalize(observed_value, min_stats[key], max_stats[key])
 
-          if 0 == expected_value then expected_value = 0.1 end
-          distance += ((observed_value - expected_value).abs ** 2) / expected_value
+          distance += (observed_value - expected_value).abs ** 2
         end
       end
 
