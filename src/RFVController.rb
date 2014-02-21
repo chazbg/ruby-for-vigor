@@ -70,35 +70,20 @@ module Controller
       @transport = transport
 
       champions_response = @transport.send_request(Champions.create_request("NA"))
-
-      if :success == champions_response[:status]
-        @champions = champions_response[:json]["data"].map do |champion_json|
-          Champion.new(champion_json[1])
-        end
-      end
+      @champions = ChampionArray.new(champions_response[:json]) if :success == champions_response[:status]
 
       items_response = @transport.send_request(Items.create_request("NA"))
-
-      if :success == items_response[:status]
-        @items = items_response[:json]["data"].map do |item_json|
-          Item.new(item_json)
-        end
-      end
+      @items = ItemArray.new(items_response[:json]) if :success == items_response[:status]
 
       summoner_spells_response = @transport.send_request(SummonerSpells.create_request("NA"))
-
-      if :success == summoner_spells_response[:status]
-        @summoner_spells = summoner_spells_response[:json]["data"].map do |summoner_spell_json|
-          SummonerSpell.new(summoner_spell_json[1])
-        end
-      end
+      @summoner_spells = SummonerSpellArray.new(summoner_spells_response[:json]) if :success == summoner_spells_response[:status]
     end
 
     def player_detailed_info(server, player)
       request = SummonersByIds.create_request(server, [player.summoner_id])
       response = @transport.send_request(request)
       detailed_info = {}
-      champion_name = @champions.find { |champion| player.champion_id == champion.key }.name
+      champion_name = @champions.find_by_id(player.champion_id).name
 
       if response[:status] == :success
         summoner_info = Summoner.new(response[:json][player.summoner_id.to_s])
@@ -123,14 +108,14 @@ module Controller
       end
     end
 
-    def request_recent_games(server, summoner_id)
+    def recent_games(server, summoner_id)
       request = GamesInfo.create_request(server, summoner_id)
       response = @transport.send_request(request)
 
       if response[:status] == :success
-        response[:json]["games"].map { |game_json| Game.new(game_json) }
+        GameArray.new(response[:json])
       else
-        []
+        GameArray.new
       end
     end
 
@@ -180,30 +165,9 @@ module Controller
       }
     end
 
-    def champion_by_id(champion_id)
-      @champions.find { |champion| champion.key == champion_id }
-    end
-
-    def summoner_spell_by_id(summoner_spell_id)
-      @summoner_spells.find { |summoner_spell| summoner_spell.key == summoner_spell_id }
-    end
-
-    def champion_min_max_stats
-      min_stats = @champions[0].stats.raw.clone
-      max_stats = @champions[0].stats.raw.clone
-
-      @champions.each do |champion|
-        champion.stats.raw.each do |key, value|
-          min_stats[key] = [min_stats[key], value].min
-          max_stats[key] = [max_stats[key], value].max
-        end
-      end
-
-      [min_stats, max_stats]
-    end
-
     def closest_champion(query_champion, champion_pool)
-      min_stats, max_stats = champion_min_max_stats
+      min_stats =  @champions.min_stats
+      max_stats = @champions.max_stats
 
       closest_champion = {distance: 10000, champion: nil}
 
@@ -211,7 +175,7 @@ module Controller
         distance = 0
 
         champion.stats.raw.each do |key, observed_value|
-          unless 0.0 == max_stats[key] 
+          unless 0.0 == max_stats[key]
             expected_value = Utils::normalize(query_champion.stats.raw[key], min_stats[key], max_stats[key])
             observed_value = Utils::normalize(observed_value, min_stats[key], max_stats[key])
 
@@ -259,6 +223,13 @@ module Controller
     end
 
     private
+    SEASON = 'SEASON4'.freeze
+    WARDS_PER_MINUTE = 0.33.freeze
+    DEATHS_PER_GAME = 5.freeze
+    JUNGLE_CS_PER_MINUTE = 5.freeze
+    AVERAGE_CS_PER_MINUTE = 8.freeze
+    SECONDS_PER_MINUTE = 60.freeze
+
     def region_menu_transition(input)
       @process = :process_region_menu_input
       @context_stack.push(Context.new(RegionMenu.new, @process))
@@ -291,7 +262,7 @@ module Controller
     def matches_menu_transition(input)
       summoner = @context_stack.top.args
 
-      matches = @service.request_recent_games(summoner.server, summoner.id)
+      matches = @service.recent_games(summoner.server, summoner.id)
 
       if 0 < matches.size
         @process = :process_matches_menu_input
@@ -338,7 +309,7 @@ module Controller
     def ranking_menu_transition(input)
       summoner = @context_stack.top.args
 
-      ranked_stats = @service.request_ranking_stats(summoner.server, summoner.id, "season4")
+      ranked_stats = @service.request_ranking_stats(summoner.server, summoner.id, SEASON)
 
       if ranked_stats
         @process = :process_ranking_menu_input
@@ -355,15 +326,15 @@ module Controller
     def champion_suggestion_menu_transition(input)
       summoner = @context_stack.top.args
 
-      query_champions = @service.request_ranking_stats(summoner.server, summoner.id, "season4").champions
-      query_champions.map! { |champion| @service.champion_by_id champion.id }
+      query_champions = @service.request_ranking_stats(summoner.server, summoner.id, SEASON).champions
+      query_champions.map! { |champion| @service.champions.find_by_id(champion.id) }
       query_champions.select! { |champion| champion != nil }
 
       if 0 == query_champions.size
-        matches = @service.request_recent_games(summoner.server, summoner.id)
+        matches = @service.recent_games(summoner.server, summoner.id)
 
         query_champions = matches.map { |match| match.champion_id }.uniq
-        query_champions.map! { |champion_id| @service.champion_by_id champion_id }
+        query_champions.map! { |champion_id| @service.champions.find_by_id(champion.id) }
       end
 
       suggestions = @service.similar_champions(query_champions)
@@ -377,7 +348,7 @@ module Controller
 
     def general_advice_menu_transition(input)
       summoner = @context_stack.top.args
-      matches = @service.request_recent_games(summoner.server, summoner.id)
+      matches = @service.recent_games(summoner.server, summoner.id)
 
       checklist = {
         jungle_cs: :not_available,
@@ -387,22 +358,18 @@ module Controller
       }
 
       #jungler games
-      jungler_games = matches.select do |match|
-        spell1 = @service.summoner_spell_by_id match.spell1
-        spell2 = @service.summoner_spell_by_id match.spell2
-
-        spell1.name == "Smite" or spell2.name == "Smite"
-      end
+      smite_id = @service.summoner_spells.find_by_name("Smite").key
+      jungler_games = matches.select { |match| match.spell1 == smite_id or match.spell2 == smite_id }
 
       jungler_games_cs = 0
       jungler_games_minutes = 0
       jungler_games.each do |game|
         jungler_games_cs += game.stats.minions_killed + game.stats.neutral_minions_killed
-        jungler_games_minutes += game.stats.time_played / 60
+        jungler_games_minutes += game.stats.time_played / SECONDS_PER_MINUTE
       end
 
       if jungler_games.size > 0
-        if jungler_games_cs < jungler_games_minutes * 5
+        if jungler_games_cs < jungler_games_minutes * JUNGLE_CS_PER_MINUTE
           checklist[:jungle_cs] = :not_ok
         else
           checklist[:jungle_cs] = :ok
@@ -413,14 +380,13 @@ module Controller
       games_rest = matches - jungler_games
       games_rest_cs = 0
       games_rest_minutes = 0
+
       games_rest.each do |game|
         games_rest_cs += game.stats.minions_killed + game.stats.neutral_minions_killed
-        games_rest_minutes += game.stats.time_played / 60
+        games_rest_minutes += game.stats.time_played / SECONDS_PER_MINUTE
       end
 
-      if games_rest_cs >= games_rest_minutes * 8
-        checklist[:average_cs] = :ok
-      end
+      checklist[:average_cs] = :ok if games_rest_cs >= games_rest_minutes * AVERAGE_CS_PER_MINUTE
 
       #wards
       wards_placed = 0
@@ -429,18 +395,14 @@ module Controller
 
       matches.each do |game|
         wards_placed += game.stats.ward_placed
-        minutes_played += game.stats.time_played / 60
+        minutes_played += game.stats.time_played / SECONDS_PER_MINUTE
         deaths += game.stats.num_deaths
       end
 
-      if wards_placed >= minutes_played / 3
-        checklist[:average_wards] = :ok
-      end
+      checklist[:average_wards] = :ok if wards_placed >= minutes_played * WARDS_PER_MINUTE
 
       #deaths
-      if deaths / matches.size <= 5
-        checklist[:average_deaths] = :ok
-      end
+      checklist[:average_deaths] = :ok if deaths / matches.size <= DEATHS_PER_GAME
 
       menu = GeneralAdviceMenu.new
       menu.display_general_advice(checklist)

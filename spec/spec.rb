@@ -367,6 +367,61 @@ module Model
       summoner_spell.name.should be_kind_of String
       summoner_spell.modes.should be_kind_of Array
     end
+    
+    it "Creates FellowPlayer instances with factory method" do
+      player = Game::FellowPlayer.create(1, 2, 3)
+  
+      player.should be_kind_of Game::FellowPlayer
+      player.champion_id.should eq 1
+      player.team_id.should eq 2
+      player.summoner_id.should eq 3
+    end
+  
+    describe "ChampionArray" do
+      it "Sets min and max vectors correctly" do
+        champ_array = ChampionArray.new(JSON.parse(CHAMPIONS))
+        min_stats = champ_array.min_stats
+        max_stats = champ_array.max_stats
+        
+        champ_array.each do |champion|
+          min_stats.each do |key, value|
+            champion.stats.raw[key].should be >= value
+          end
+
+          max_stats.each do |key, value|
+            champion.stats.raw[key].should be <= value
+          end
+        end
+      end
+      
+      it "Finds champions by id correctly" do
+        champ_array = ChampionArray.new(JSON.parse(CHAMPIONS))
+        champion = champ_array.find_by_id(238)
+        champion.name.should eq "Zed"
+      end
+    end
+    
+    describe "ItemArray" do
+      it "Finds items by id correctly" do
+        item_array = ItemArray.new(JSON.parse(ITEMS))
+        item = item_array.find_by_id(1058)
+        item.name.should eq "Needlessly Large Rod"
+      end
+    end
+    
+    describe "SummonerSpellArray" do
+      it "Finds summoner spells by id correctly" do
+        summoner_spell_array = SummonerSpellArray.new(JSON.parse(SUMMONER_SPELLS))
+        summoner_spell = summoner_spell_array.find_by_id(12)
+        summoner_spell.name.should eq "Teleport"
+      end
+      
+      it "Finds summoner spells by name correctly" do
+        summoner_spell_array = SummonerSpellArray.new(JSON.parse(SUMMONER_SPELLS))
+        summoner_spell = summoner_spell_array.find_by_name("Smite")
+        summoner_spell.name.should eq "Smite"
+      end
+    end
   end
 end
 
@@ -403,8 +458,6 @@ module Controller
           {status: :success, json: JSON.parse(SUMMONER_BY_NAME)}
         end
       end
-
-      @query_service = QueryService.new @transport
     end
 
     describe "ContextStack" do
@@ -429,6 +482,18 @@ module Controller
         stack.push(context3)
         stack.pop
         stack.top.should eq context2
+      end
+      
+      it "Rolls contexts back correctly" do
+        stack = ContextStack.new
+        context1 = UserInterface::MainMenu.new
+        context2 = UserInterface::RegionMenu.new
+        context3 = UserInterface::SummonerNameMenu.new
+        stack.push(context1)
+        stack.push(context2)
+        stack.push(context3)
+        stack.rollback
+        stack.top.should eq context1
       end
     end
 
@@ -479,23 +544,19 @@ module Controller
       end
     end
 
-    describe "QueryService" do
-      it "Extracts stats vector from champions array correctly" do
-        min_stats, max_stats = @query_service.champion_min_max_stats
-        @query_service.champions.each do |champion|
-          min_stats.each do |key, value|
-            champion.stats.raw[key].should be >= value
-          end
-
-          max_stats.each do |key, value|
-            champion.stats.raw[key].should be <= value
-          end
-        end
+    describe "QueryService" do      
+      it "Initializes accessors correctly" do
+        query_service = QueryService.new(@transport)
+        query_service.champions.should be_kind_of Model::ChampionArray
+        query_service.summoner_spells.should be_kind_of Model::SummonerSpellArray
+        query_service.items.should be_kind_of Model::ItemArray
+        query_service.recent_games("euw", 20548044).should be_kind_of Model::GameArray
       end
     end
-  end
+    
+    
+    describe "DataController" do
 
-  describe "DataController" do
-
+    end
   end
 end

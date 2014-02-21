@@ -33,6 +33,14 @@ module Model
     class FellowPlayer
       attr_accessor :champion_id, :team_id, :summoner_id
 
+      def self.create(champion_id, team_id, summoner_id)
+        player = FellowPlayer.new
+        player.champion_id = champion_id
+        player.team_id = team_id
+        player.summoner_id = summoner_id
+        player
+      end
+
       def initialize(fellow_player_json = {})
         fellow_player_json ||= {}
         @champion_id = fellow_player_json["championId"] || 0
@@ -217,6 +225,12 @@ module Model
     end
   end
 
+  class GameArray < Array
+    def initialize(games_json)
+      games_json["games"].each { |game_json| self << Game.new(game_json) }
+    end
+  end
+  
   class Champion
     attr_reader :key,
                 :name,
@@ -281,6 +295,35 @@ module Model
     end
   end
 
+  class ChampionArray < Array
+    attr_accessor :min_stats, :max_stats
+
+    def initialize(champion_array_json = {})
+      champion_array_json ||= {}
+
+      self.concat(champion_array_json["data"].map { |_, champion_json| Champion.new(champion_json) })
+
+      min_max_stats
+    end
+
+    def find_by_id(champion_id)
+      self.find { |champion| champion.key == champion_id }
+    end
+    
+    private
+    def min_max_stats
+      @min_stats = self[0].stats.raw.clone
+      @max_stats = self[0].stats.raw.clone
+
+      self.each do |champion|
+        champion.stats.raw.each do |key, value|
+          @min_stats[key] = [@min_stats[key], value].min
+          @max_stats[key] = [@max_stats[key], value].max
+        end
+      end
+    end
+  end
+
   class Item
     attr_reader :id, :name, :top_tier
 
@@ -290,6 +333,18 @@ module Model
       @id = item_json[0].to_i
       @name = item_json[1]["name"]
       @top_tier = item_json[1]["into"] == nil ? true : false
+    end
+  end
+
+  class ItemArray < Array
+    def initialize(item_array_json = {})
+      item_array_json ||= {}
+
+      self.concat(item_array_json["data"].map { |item_json| Item.new(item_json) })
+    end
+    
+    def find_by_id(item_id)
+      self.find { |item| item.id == item_id }
     end
   end
 
@@ -354,6 +409,22 @@ module Model
       @name = summoner_spell_json["name"] || ""
       @modes = summoner_spell_json["modes"] || []
       @key = (summoner_spell_json["key"] || 0).to_i
+    end
+  end
+
+  class SummonerSpellArray < Array
+    def initialize(summoner_spell_array_json = {})
+      summoner_spell_array_json ||= {}
+
+      self.concat(summoner_spell_array_json["data"].map { |_, summoner_spell_json| SummonerSpell.new(summoner_spell_json) })
+    end
+    
+    def find_by_id(summoner_spell_id)
+      self.find { |summoner_spell| summoner_spell.key == summoner_spell_id }
+    end
+    
+    def find_by_name(summoner_spell_name)
+      self.find { |summoner_spell| summoner_spell.name == summoner_spell_name }
     end
   end
 end
