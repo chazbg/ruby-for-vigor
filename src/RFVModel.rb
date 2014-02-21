@@ -1,4 +1,5 @@
 require 'date'
+require_relative 'RFVUtils' 
 
 module Model
   class Summoner
@@ -33,7 +34,7 @@ module Model
     class FellowPlayer
       attr_accessor :champion_id, :team_id, :summoner_id
 
-      def self.create(champion_id, team_id, summoner_id)
+      def self.create(summoner_id, team_id, champion_id)
         player = FellowPlayer.new
         player.champion_id = champion_id
         player.team_id = team_id
@@ -293,6 +294,22 @@ module Model
       @name = champion_json["name"] || ""
       @stats = Stats.new(champion_json["stats"])
     end
+    
+    def distance(other, min_stats, max_stats)
+      distance = 0
+      
+      other.stats.raw.each do |key, observed_value|
+        unless 0.0 == max_stats[key]
+          expected_value = Utils::normalize(@stats.raw[key], min_stats[key], max_stats[key])
+          observed_value = Utils::normalize(observed_value, min_stats[key], max_stats[key])
+
+          if 0 == expected_value then expected_value = 0.1 end
+          distance += ((observed_value - expected_value).abs ** 2) / expected_value
+        end
+      end
+      
+      distance
+    end
   end
 
   class ChampionArray < Array
@@ -415,8 +432,12 @@ module Model
   class SummonerSpellArray < Array
     def initialize(summoner_spell_array_json = {})
       summoner_spell_array_json ||= {}
-
-      self.concat(summoner_spell_array_json["data"].map { |_, summoner_spell_json| SummonerSpell.new(summoner_spell_json) })
+      
+      summoner_spell_array = summoner_spell_array_json["data"].map do |_, summoner_spell_json| 
+        SummonerSpell.new(summoner_spell_json)
+      end
+      
+      self.concat(summoner_spell_array)
     end
     
     def find_by_id(summoner_spell_id)

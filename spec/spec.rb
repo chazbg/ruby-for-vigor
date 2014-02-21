@@ -372,9 +372,9 @@ module Model
       player = Game::FellowPlayer.create(1, 2, 3)
   
       player.should be_kind_of Game::FellowPlayer
-      player.champion_id.should eq 1
+      player.summoner_id.should eq 1
       player.team_id.should eq 2
-      player.summoner_id.should eq 3
+      player.champion_id.should eq 3
     end
   
     describe "ChampionArray" do
@@ -550,7 +550,21 @@ module Controller
         query_service.champions.should be_kind_of Model::ChampionArray
         query_service.summoner_spells.should be_kind_of Model::SummonerSpellArray
         query_service.items.should be_kind_of Model::ItemArray
+      end
+      
+      it "Gets recent games correctly" do
+        query_service = QueryService.new(@transport)
         query_service.recent_games("euw", 20548044).should be_kind_of Model::GameArray
+      end
+      
+      it "Creates fellow player correctly" do
+        query_service = QueryService.new(@transport)
+        player = query_service.create_player(1, 2, 3)
+        
+        player.should be_kind_of Model::Game::FellowPlayer
+        player.summoner_id.should eq 1
+        player.team_id.should eq 2
+        player.champion_id.should eq 3
       end
     end
     

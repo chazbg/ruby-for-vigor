@@ -36,30 +36,6 @@ module Controller
     end
   end
 
-  class Utils
-    def self.assign_players(players)
-      blue_team = []
-      purple_team = []
-
-      players.each do |player|
-        case player.team_id
-          when 100 then blue_team << player
-          when 200 then purple_team << player
-        end
-      end
-
-      [blue_team, purple_team]
-    end
-
-    def self.normalize(current_value, min_value, max_value)
-      if min_value == max_value
-        1
-      else
-        (current_value.to_f - min_value) / (max_value - min_value)
-      end
-    end
-  end
-
   class QueryService
     include Model
     include Protocol
@@ -97,7 +73,7 @@ module Controller
       detailed_info
     end
 
-    def request_summoners(server, names)
+    def summoners(server, names)
       request = SummonerByName.create_request(server, names)
       response = @transport.send_request(request)
 
@@ -120,14 +96,10 @@ module Controller
     end
 
     def create_player(summoner_id, team_id, champion_id)
-      player = Game::FellowPlayer.new
-      player.summoner_id = summoner_id
-      player.team_id = team_id
-      player.champion_id = champion_id
-      player
+      Game::FellowPlayer.create(summoner_id, team_id, champion_id)
     end
 
-    def request_ranking_stats(server, summoner_id, season)
+    def ranking_stats(server, summoner_id, season)
       request = SummonerRankedInfo.create_request(server, summoner_id, season)
       response = @transport.send_request(request)
 
@@ -140,11 +112,12 @@ module Controller
 
     def ultimate_bravery_build
       champion = @champions[rand(0...@champions.size)].name
+      
       summoner_spells_pool = @summoner_spells.select { |spell| spell.modes.include?("CLASSIC") }
       summoner_spells_pool.map! { |spell| spell.name }
 
       summoner_spell1 = summoner_spells_pool[rand(0...summoner_spells_pool.size)]
-      summoner_spells_pool.delete summoner_spell1
+      summoner_spells_pool.delete(summoner_spell1)
       summoner_spell2 = summoner_spells_pool[rand(0...summoner_spells_pool.size)]
 
       items_pool = @items.select { |item| item.top_tier }
@@ -164,7 +137,7 @@ module Controller
         item_build: item_build
       }
     end
-
+    
     def closest_champion(query_champion, champion_pool)
       min_stats =  @champions.min_stats
       max_stats = @champions.max_stats
@@ -172,17 +145,7 @@ module Controller
       closest_champion = {distance: 10000, champion: nil}
 
       champion_pool.each do |champion|
-        distance = 0
-
-        champion.stats.raw.each do |key, observed_value|
-          unless 0.0 == max_stats[key]
-            expected_value = Utils::normalize(query_champion.stats.raw[key], min_stats[key], max_stats[key])
-            observed_value = Utils::normalize(observed_value, min_stats[key], max_stats[key])
-
-            if 0 == expected_value then expected_value = 0.1 end
-            distance += ((observed_value - expected_value).abs ** 2) / expected_value
-          end
-        end
+        distance = query_champion.distance(champion, min_stats, max_stats)
 
         if distance < closest_champion[:distance]
           closest_champion[:distance] = distance
@@ -245,7 +208,7 @@ module Controller
     def summoner_menu_transition(input)
       input = input.split(',')[0]
       server = @context_stack.top.args
-      summoners = @service.request_summoners(server, [input])
+      summoners = @service.summoners(server, [input])
 
       unless 0 == summoners.size
         menu = SummonerMenu.new
@@ -297,7 +260,10 @@ module Controller
 
         @process = :process_match_details_menu_input
         menu = MatchDetails.new
-        menu.dislpay_match_details(matches[index], @service.items, blue_team, purple_team)
+        menu.dislpay_match_details(matches[index], 
+                                   @service.items, 
+                                   blue_team, 
+                                   purple_team)
         @context_stack.push(Context.new(menu, @process))
       else
         @context_stack.top.menu.display_error("Invalid game index")
@@ -309,7 +275,7 @@ module Controller
     def ranking_menu_transition(input)
       summoner = @context_stack.top.args
 
-      ranked_stats = @service.request_ranking_stats(summoner.server, summoner.id, SEASON)
+      ranked_stats = @service.ranking_stats(summoner.server, summoner.id, SEASON)
 
       if ranked_stats
         @process = :process_ranking_menu_input
@@ -326,7 +292,7 @@ module Controller
     def champion_suggestion_menu_transition(input)
       summoner = @context_stack.top.args
 
-      query_champions = @service.request_ranking_stats(summoner.server, summoner.id, SEASON).champions
+      query_champions = @service.ranking_stats(summoner.server, summoner.id, SEASON).champions
       query_champions.map! { |champion| @service.champions.find_by_id(champion.id) }
       query_champions.select! { |champion| champion != nil }
 
