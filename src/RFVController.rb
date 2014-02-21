@@ -111,25 +111,9 @@ module Controller
     end
 
     def ultimate_bravery_build
-      champion = @champions[rand(0...@champions.size)].name
-      
-      summoner_spells_pool = @summoner_spells.select { |spell| spell.modes.include?("CLASSIC") }
-      summoner_spells_pool.map! { |spell| spell.name }
-
-      summoner_spell1 = summoner_spells_pool[rand(0...summoner_spells_pool.size)]
-      summoner_spells_pool.delete(summoner_spell1)
-      summoner_spell2 = summoner_spells_pool[rand(0...summoner_spells_pool.size)]
-
-      items_pool = @items.select { |item| item.top_tier }
-      items_pool.map! { |item| item.name }
-
-      item_build = []
-      (0...6).each do |i|
-        item = items_pool[rand(0...items_pool.size)]
-        items_pool.delete(item)
-        item_build << item
-      end
-
+      champion = choose_champion
+      summoner_spell1, summoner_spell2 = choose_summoner_spells
+      item_build = choose_item_build
       {
         champion: champion,
         summoner_spell1: summoner_spell1,
@@ -165,6 +149,35 @@ module Controller
           similar: closest_champion(query_champion, champions_pool)
         }
       end
+    end
+    
+    private
+    def choose_champion
+      @champions[rand(0...@champions.size)].name
+    end
+    
+    def choose_summoner_spells
+      summoner_spells_pool = @summoner_spells.select { |spell| spell.modes.include?("CLASSIC") }
+      summoner_spells_pool.map! { |spell| spell.name }
+
+      summoner_spell1 = summoner_spells_pool[rand(0...summoner_spells_pool.size)]
+      summoner_spells_pool.delete(summoner_spell1)
+      summoner_spell2 = summoner_spells_pool[rand(0...summoner_spells_pool.size)]
+      [summoner_spell1, summoner_spell2]
+    end
+    
+    def choose_item_build
+      items_pool = @items.select { |item| item.top_tier }
+      items_pool.map! { |item| item.name }
+      item_build = []
+      
+      (0...6).each do |i|
+        item = items_pool[rand(0...items_pool.size)]
+        items_pool.delete(item)
+        item_build << item
+      end
+      
+      item_build
     end
   end
 
@@ -240,23 +253,23 @@ module Controller
       @context_stack.top.menu.display_menu
     end
 
+    def obtain_teams(players, summoner_info)
+      blue_team, purple_team = Utils::assign_players(players)
+
+      blue_team.map! { |player| @service.player_detailed_info(summoner_info.server, player) }
+      purple_team.map! { |player| @service.player_detailed_info(summoner_info.server, player) }
+      
+      [blue_team, purple_team]
+    end
+    
     def match_details_transition(input)
       matches = @context_stack.top.args[:matches]
-      summoner = @context_stack.top.args[:current_summoner]
+      summoner_info = @context_stack.top.args[:current_summoner]
       index = input.to_i
 
       if (0...matches.size).include?(index)
-        current_summoner = @service.create_player(summoner.id,
-                                                  matches[index].team_id,
-                                                  matches[index].champion_id)
-
-        players = [current_summoner]
-        players += matches[index].fellow_players
-
-        blue_team, purple_team = Utils::assign_players(players)
-
-        blue_team.map! { |player| @service.player_detailed_info(summoner.server, player) }
-        purple_team.map! { |player| @service.player_detailed_info(summoner.server, player) }
+        players = matches[index].fellow_players
+        blue_team, purple_team = obtain_teams(players, summoner_info)
 
         @process = :process_match_details_menu_input
         menu = MatchDetails.new
@@ -289,23 +302,25 @@ module Controller
       @context_stack.top.menu.display_menu
     end
 
-    def champion_suggestion_menu_transition(input)
-      summoner = @context_stack.top.args
+    def preferred_champions(summoner)
+      champions = @service.ranking_stats(summoner.server, summoner.id, SEASON).champions
+      champions.map! { |champion| @service.champions.find_by_id(champion.id) }
+      champions.select! { |champion| champion != nil }
 
-      query_champions = @service.ranking_stats(summoner.server, summoner.id, SEASON).champions
-      query_champions.map! { |champion| @service.champions.find_by_id(champion.id) }
-      query_champions.select! { |champion| champion != nil }
-
-      if 0 == query_champions.size
+      if 0 == champions.size
         matches = @service.recent_games(summoner.server, summoner.id)
 
-        query_champions = matches.map { |match| match.champion_id }.uniq
-        query_champions.map! { |champion_id| @service.champions.find_by_id(champion.id) }
+        champions = matches.map { |match| match.champion_id }.uniq
+        champions.map! { |champion_id| @service.champions.find_by_id(champion.id) }
       end
-
+    end
+    
+    def champion_suggestion_menu_transition(input)
+      summoner = @context_stack.top.args
+      query_champions = preferred_champions(summoner)
       suggestions = @service.similar_champions(query_champions)
-
       menu = ChampionSuggestionMenu.new
+      
       menu.display_suggestions suggestions
       @process = :process_champion_suggestion_menu_input
       @context_stack.push(Context.new(menu, @process))

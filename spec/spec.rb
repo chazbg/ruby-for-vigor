@@ -425,6 +425,55 @@ module Model
   end
 end
 
+module Utils
+  describe "Utils" do
+    it "Assigns players to teams correctly" do
+      summoner1 = Model::Game::FellowPlayer.new({
+        "teamId" => 100,
+        "summonerId" => 1,
+        "championId" => 11
+      })
+
+      summoner2 = Model::Game::FellowPlayer.new({
+        "teamId" => 200,
+        "summonerId" => 2,
+        "championId" => 12
+      })
+
+      summoner3 = Model::Game::FellowPlayer.new({
+        "teamId" => 100,
+        "summonerId" => 3,
+        "championId" => 13
+      })
+
+      summoner4 = Model::Game::FellowPlayer.new({
+        "teamId" => 200,
+        "summonerId" => 1,
+        "championId" => 14
+      })
+
+      blue_team, purple_team = Utils::assign_players([
+        summoner1,
+        summoner2,
+        summoner3,
+        summoner4
+      ])
+
+      blue_team.include?(summoner1).should eq true
+      blue_team.include?(summoner3).should eq true
+      purple_team.include?(summoner2).should eq true
+      purple_team.include?(summoner4).should eq true
+    end
+
+    it "Normalizes values correctly" do
+      epsilon = 0.000001
+      (Utils::normalize(1, 0, 10) - 0.1).should be <= epsilon
+      (Utils::normalize(5, 0, 10) - 0.5).should be <= epsilon
+      (Utils::normalize(5, 0, 60) - 0.08333333).should be <= epsilon
+    end
+  end
+end
+
 module Controller
   describe "Controller" do
     before(:each) do
@@ -497,52 +546,7 @@ module Controller
       end
     end
 
-    describe "Utils" do
-      it "Assigns players to teams correctly" do
-        summoner1 = Model::Game::FellowPlayer.new({
-          "teamId" => 100,
-          "summonerId" => 1,
-          "championId" => 11
-        })
-
-        summoner2 = Model::Game::FellowPlayer.new({
-          "teamId" => 200,
-          "summonerId" => 2,
-          "championId" => 12
-        })
-
-        summoner3 = Model::Game::FellowPlayer.new({
-          "teamId" => 100,
-          "summonerId" => 3,
-          "championId" => 13
-        })
-
-        summoner4 = Model::Game::FellowPlayer.new({
-          "teamId" => 200,
-          "summonerId" => 1,
-          "championId" => 14
-        })
-
-        blue_team, purple_team = Utils::assign_players([
-          summoner1,
-          summoner2,
-          summoner3,
-          summoner4
-        ])
-
-        blue_team.include?(summoner1).should eq true
-        blue_team.include?(summoner3).should eq true
-        purple_team.include?(summoner2).should eq true
-        purple_team.include?(summoner4).should eq true
-      end
-
-      it "Normalizes values correctly" do
-        epsilon = 0.000001
-        (Utils::normalize(1, 0, 10) - 0.1).should be <= epsilon
-        (Utils::normalize(5, 0, 10) - 0.5).should be <= epsilon
-        (Utils::normalize(5, 0, 60) - 0.08333333).should be <= epsilon
-      end
-    end
+    
 
     describe "QueryService" do      
       it "Initializes accessors correctly" do

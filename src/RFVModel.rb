@@ -29,7 +29,8 @@ module Model
                 :spell2,
                 :stats,
                 :sub_type,
-                :team_id
+                :team_id,
+                :summoner_id
 
     class FellowPlayer
       attr_accessor :champion_id, :team_id, :summoner_id
@@ -209,11 +210,13 @@ module Model
       end
     end
 
-    def initialize(game_json = {})
+    def initialize(game_json = {}, summoner_id = 0)
       game_json ||= {}
+      @summoner_id = summoner_id
       @champion_id = game_json["championId"] || 0
+      @team_id = game_json["teamId"] || 0
       @create_date = Time.at((game_json["createDate"] || 0) / 1000)
-      @fellow_players = []
+      @fellow_players = [FellowPlayer.create(@summoner_id, @team_id, @champion_id)]
       (game_json["fellowPlayers"] || []).each { |player| @fellow_players << FellowPlayer.new(player) }
       @game_mode = game_json["gameMode"] || ""
       @game_type = game_json["gameType"] || ""
@@ -221,14 +224,14 @@ module Model
       @spell1 = game_json["spell1"] || 0
       @spell2 = game_json["spell2"] || 0
       @stats = Stats.new(game_json["stats"])
-      @sub_type = game_json["subType"] || ""
-      @team_id = game_json["teamId"] || 0
+      @sub_type = game_json["subType"] || ""  
     end
   end
 
   class GameArray < Array
     def initialize(games_json)
-      games_json["games"].each { |game_json| self << Game.new(game_json) }
+      summoner_id = games_json["summonerId"] || 0
+      games_json["games"].each { |game_json| self << Game.new(game_json, summoner_id) }
     end
   end
   
