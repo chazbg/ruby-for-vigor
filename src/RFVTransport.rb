@@ -21,6 +21,10 @@ module Transport
       end
 
       result
+
+    rescue SocketError => e
+      puts "Socket error: #{ e }"
+      abort("Check internet connection")
     end
   end
 end
