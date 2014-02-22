@@ -424,7 +424,6 @@ module Model
 
     def initialize(ranked_stats_json = {})
       ranked_stats_json ||= {}
-
       @champions = (ranked_stats_json["champions"] || []).map do |champion_json|
         RankedChampion.new(champion_json)
       end

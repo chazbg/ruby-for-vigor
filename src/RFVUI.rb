@@ -187,7 +187,7 @@ module UserInterface
             "Total first bloods: #{ champion.first_bloods }",
             "First blood probability: %0.1f" % [champion.first_blood_probability],
             "Most kills in a game: #{ champion.max_champions_killed }",
-            "Win ratio: %0.1f %" %[champion.win_ratio * 100],
+            "Win ratio: %0.1f %" % [champion.win_ratio * 100],
             "-----------------------"
           ]
         end

@@ -5,7 +5,9 @@ class MainLoop
   def initialize
     @transport = Object.new
     @transport.define_singleton_method(:send_request) do |uri|
-      if uri.path.include? "champion"
+      if uri.path.include? "season"
+        {status: :success, json: JSON.parse(RANKED_STATS)}
+      elsif uri.path.include? "champion"
         {status: :success, json: JSON.parse(CHAMPIONS)}
       elsif uri.path.include? "game"
         {status: :success, json: JSON.parse(GAMES)}
@@ -23,8 +25,6 @@ class MainLoop
         {status: :success, json: JSON.parse(RUNES)}
       elsif uri.path.include? "summoner/by-name"
         {status: :success, json: JSON.parse(SUMMONER_BY_NAME)}
-      elsif uri.path.include? "ranked?season"
-        {status: :success, json: JSON.parse(RANKED_STATS)}
       elsif uri.path.include? "item"
         {status: :success, json: JSON.parse(ITEMS)}
       elsif uri.path.include? "summoner-spell"
@@ -36,8 +36,7 @@ class MainLoop
   end
 
   def start
-    # Transport::HTTPTransport.new
-    input_processor = InputProcessor::MenuInputProcessor.new(@transport)
+    input_processor = InputProcessor::MenuInputProcessor.new(Transport::HTTPTransport.new)
     while (input = gets.chomp.downcase) != 'q' do
       input_processor.process(input)
     end
