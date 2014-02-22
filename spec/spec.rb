@@ -432,10 +432,23 @@ module Model
         game_array = GameArray.new(JSON.parse(GAMES))
         filtered_array = game_array.filter_attribute([:champion_id, :team_id])
         filtered_array.should be_kind_of Array
+
         filtered_array.each do |element|
           element.should be_kind_of Hash
           element[:champion_id].should be_kind_of Integer
           element[:team_id].should be_kind_of Integer
+        end
+      end
+
+      it "Handles empty arrays correctly" do
+        game_array = GameArray.new(JSON.parse(GAMES))
+
+        filtered_array = game_array.filter_attribute([:champion_ids])
+        filtered_array.should be_kind_of Array
+
+        filtered_array.each do |element|
+          element.should be_kind_of Hash
+          element[:champion_ids].should eq nil
         end
       end
     end
