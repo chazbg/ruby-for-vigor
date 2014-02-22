@@ -18,6 +18,18 @@ module Model
     end
   end
 
+  class QueryArray < Array
+    def filter_attribute(attribute_array)
+      self.map do |element|
+        attr_hash = {}
+        attribute_array.each do |attr|
+          attr_hash[attr] = element.instance_variable_get("@#{attr}")
+        end
+        attr_hash
+      end
+    end
+  end
+
   class Game
     attr_reader :champion_id,
                 :create_date,
@@ -228,7 +240,7 @@ module Model
     end
   end
 
-  class GameArray < Array
+  class GameArray < QueryArray
     def initialize(games_json)
       summoner_id = games_json["summonerId"] || 0
       games_json["games"].each { |game_json| self << Game.new(game_json, summoner_id) }
@@ -314,7 +326,7 @@ module Model
     end
   end
 
-  class ChampionArray < Array
+  class ChampionArray < QueryArray
     attr_accessor :min_stats, :max_stats
 
     def initialize(champion_array_json = {})
@@ -355,7 +367,7 @@ module Model
     end
   end
 
-  class ItemArray < Array
+  class ItemArray < QueryArray
     def initialize(item_array_json = {})
       item_array_json ||= {}
 
@@ -431,7 +443,7 @@ module Model
     end
   end
 
-  class SummonerSpellArray < Array
+  class SummonerSpellArray < QueryArray
     def initialize(summoner_spell_array_json = {})
       summoner_spell_array_json ||= {}
 

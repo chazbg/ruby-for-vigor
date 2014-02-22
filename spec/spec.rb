@@ -395,6 +395,50 @@ module Model
       player.champion_id.should eq 3
     end
 
+    describe "QueryArray" do
+      it "Filters ChampionArray attributes correctly" do
+        champion_array = ChampionArray.new(JSON.parse(CHAMPIONS))
+        filtered_array = champion_array.filter_attribute([:name, :title])
+        filtered_array.should be_kind_of Array
+        filtered_array.each do |element|
+          element.should be_kind_of Hash
+          element[:name].should be_kind_of String
+          element[:title].should be_kind_of String
+        end
+      end
+      
+      it "Filters ItemArray attributes correctly" do
+        item_array = ItemArray.new(JSON.parse(ITEMS))
+        filtered_array = item_array.filter_attribute([:name, :id])
+        filtered_array.should be_kind_of Array
+        filtered_array.each do |element|
+          element.should be_kind_of Hash
+          element[:name].should be_kind_of String
+          element[:id].should be_kind_of Integer
+        end
+      end
+      
+      it "Filters SummonerSpellArray attributes correctly" do
+        summoner_spell_array = SummonerSpellArray.new(JSON.parse(SUMMONER_SPELLS))
+        filtered_array = summoner_spell_array.filter_attribute([:name])
+        filtered_array.should be_kind_of Array
+        filtered_array.each do |element|
+          element.should be_kind_of Hash
+          element[:name].should be_kind_of String
+        end
+      end
+      
+      it "Filters GameArray attributes correctly" do
+        game_array = GameArray.new(JSON.parse(GAMES))
+        filtered_array = game_array.filter_attribute([:champion_id, :team_id])
+        filtered_array.should be_kind_of Array
+        filtered_array.each do |element|
+          element.should be_kind_of Hash
+          element[:champion_id].should be_kind_of Integer
+          element[:team_id].should be_kind_of Integer
+        end
+      end
+    end
 
     describe "ChampionArray" do
       it "Extracts array of champions from JSON correctly" do
