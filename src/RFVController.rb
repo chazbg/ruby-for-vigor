@@ -307,7 +307,7 @@ module Controller
         matches = @service.recent_games(summoner.server, summoner.id)
 
         champions = matches.map { |match| match.champion_id }.uniq
-        champions.map! { |champion_id| @service.champions.find_by_id(champion.id) }
+        champions.map! { |champion_id| @service.champions.find_by_id(champion_id) }
       end
 
       champions

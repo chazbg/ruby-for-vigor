@@ -406,7 +406,7 @@ module Model
           element[:title].should be_kind_of String
         end
       end
-      
+
       it "Filters ItemArray attributes correctly" do
         item_array = ItemArray.new(JSON.parse(ITEMS))
         filtered_array = item_array.filter_attribute([:name, :id])
@@ -417,7 +417,7 @@ module Model
           element[:id].should be_kind_of Integer
         end
       end
-      
+
       it "Filters SummonerSpellArray attributes correctly" do
         summoner_spell_array = SummonerSpellArray.new(JSON.parse(SUMMONER_SPELLS))
         filtered_array = summoner_spell_array.filter_attribute([:name])
@@ -427,7 +427,7 @@ module Model
           element[:name].should be_kind_of String
         end
       end
-      
+
       it "Filters GameArray attributes correctly" do
         game_array = GameArray.new(JSON.parse(GAMES))
         filtered_array = game_array.filter_attribute([:champion_id, :team_id])
